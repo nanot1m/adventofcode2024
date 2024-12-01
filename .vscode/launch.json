@@ -1,0 +1,34 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Template",
+			"request": "launch",
+			"runtimeArgs": ["run-script", "tpl", "${input:dayNumber}"],
+			"runtimeExecutable": "npm",
+			"skipFiles": ["<node_internals>/**"],
+			"type": "node",
+			"cwd": "${workspaceFolder}/js"
+		},
+		{
+			"name": "Solve",
+			"request": "launch",
+			"runtimeArgs": ["run-script", "solve", "${fileBasenameNoExtension}"],
+			"runtimeExecutable": "npm",
+			"skipFiles": ["<node_internals>/**"],
+			"type": "node",
+			"cwd": "${workspaceFolder}/js",
+			"console": "integratedTerminal"
+		}
+	],
+	"inputs": [
+		{
+			"id": "dayNumber",
+			"type": "promptString",
+			"description": "Day number"
+		}
+	]
+}
