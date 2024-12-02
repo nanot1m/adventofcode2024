@@ -418,3 +418,12 @@ export function repeatWithDelimiters(xs, delimiters, count) {
 export function toString(x) {
 	return x.toString()
 }
+
+/**
+ * @param {number} value
+ * @param {number} min
+ * @param {number} max
+ */
+export function isInRange(value, min, max) {
+	return value >= min && value <= max
+}
