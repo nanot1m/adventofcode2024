@@ -36,6 +36,8 @@ export const DIRS_8 = [
 	vec(1, 1),
 ]
 
+export const DIRS_4_DIAG = [vec(-1, -1), vec(1, -1), vec(-1, 1), vec(1, 1)]
+
 /**
  *
  * @param {string} dir
