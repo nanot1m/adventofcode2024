@@ -138,6 +138,17 @@ export function modGet(xs, pos) {
  */
 export function set(xs, pos, value) {
 	xs[pos[1]][pos[0]] = value
+	return xs
+}
+
+/**
+ * @template T
+ * @param {T[][]} xs
+ * @param {V.Vec2} pos
+ * @param {T} value
+ */
+export function imSet(xs, pos, value) {
+	return set(clone(xs), pos, value)
 }
 
 /**
@@ -157,7 +168,7 @@ export function toString(xs) {
  * @returns {U[][]}
  */
 export function map(xs, fn) {
-	return xs.map((l, x) => l.map((v, y) => fn(v, [x, y])))
+	return xs.map((l, y) => l.map((v, x) => fn(v, [x, y])))
 }
 
 /**
