@@ -6,6 +6,7 @@ declare global {
 		firstOrDefault(defaultValue: T): T
 		last(): T | undefined
 		groupsOf(size: number): IteratorObject<T[]>
+		groupBy<K>(keySelector: (x: T) => K): Map<K, T[]>
 		count(predicate?: (x: T) => boolean): number
 		zip<U>(other: Iterable<U>): IteratorObject<[T, U]>
 		indexed(): IteratorObject<[number, T]>

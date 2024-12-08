@@ -57,6 +57,23 @@ Iterator.prototype.groupsOf = function* (n) {
 }
 
 /**
+ * @param {(val: K) => T} keyFn
+ * @template T
+ * @template K
+ */
+Iterator.prototype.groupBy = function (keyFn) {
+	const map = new Map()
+	for (const x of this) {
+		const key = keyFn(x)
+		if (!map.has(key)) {
+			map.set(key, [])
+		}
+		map.get(key).push(x)
+	}
+	return map
+}
+
+/**
  * @param {IteratorObject<number>} xs
  */
 export function sum(xs) {
