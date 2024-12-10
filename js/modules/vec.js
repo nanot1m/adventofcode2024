@@ -208,3 +208,8 @@ export const mLen = (vecA, vecB = zero()) =>
  */
 export const inRange = (vec, min, max) =>
 	vec[0] >= min[0] && vec[0] <= max[0] && vec[1] >= min[1] && vec[1] <= max[1]
+
+/**
+ * @param {Vec2} vec
+ */
+export const toString = ([x, y]) => `${x},${y}`

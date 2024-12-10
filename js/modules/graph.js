@@ -48,7 +48,7 @@ export function* dfs(getNext, start, valToHash) {
 /**
  * @template T
  *
- * @param {(value: T, step: PathItem<T>) => IteratorObject<T>} getNext
+ * @param {(value: T, step: PathItem<T>) => Iterable<T>} getNext
  * @param {T[]} starts
  * @param {(value: T) => unknown} [valToHash]
  *
