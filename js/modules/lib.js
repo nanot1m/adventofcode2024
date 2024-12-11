@@ -187,6 +187,29 @@ export function mulMatrix(m1, m2) {
 }
 
 /**
+ *
+ * @param {Record<T, U> | Map<T, U>} map
+ * @param {T} key
+ * @param {() => U} getValue
+ * @returns
+ *
+ * @template {string | number | symbol} T
+ * @template U
+ */
+export function getOrUpdate(map, key, getValue) {
+	if (map instanceof Map) {
+		if (!map.has(key)) {
+			map.set(key, getValue())
+		}
+		return map.get(key)
+	}
+	if (!(key in map)) {
+		map[key] = getValue()
+	}
+	return map[key]
+}
+
+/**
  *  @param {number[][]} mat1
  * @param  {...number[][]} mats
  */
