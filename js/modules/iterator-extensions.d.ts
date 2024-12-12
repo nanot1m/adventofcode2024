@@ -25,6 +25,7 @@ declare global {
 		tap(fn: (x: T) => void): IteratorObject<T>
 		chain<U>(fn: (x: Iterable<T>) => IteratorObject<U>): IteratorObject<U>
 		skip(count: number): IteratorObject<T>
+		toSet(): Set<T>
 
 		// number methods
 		sum(): T extends number ? number : never

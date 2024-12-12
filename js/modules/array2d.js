@@ -168,7 +168,7 @@ export function toString(xs) {
  * @returns {U[][]}
  */
 export function map(xs, fn) {
-	return xs.map((l, y) => l.map((v, x) => fn(v, [x, y])))
+	return xs.map((l, y) => l.map((v, x) => fn(v, V.vec(x, y))))
 }
 
 /**
@@ -199,7 +199,7 @@ export function clone(xs) {
 /**
  * @template T
  * @param {T[][]} xs
- * @param {Readonly<V.Vec2>} pos
+ * @param {V.Vec2} pos
  * @returns {boolean}
  */
 export function contains(xs, pos) {

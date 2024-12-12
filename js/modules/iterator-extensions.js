@@ -356,6 +356,10 @@ Iterator.prototype.toMap = function (keyFn, valueFn) {
 	return map
 }
 
+Iterator.prototype.toSet = function () {
+	return new Set(this)
+}
+
 Iterator.prototype.lcm = function () {
 	return this.reduce(lcm, 1)
 }

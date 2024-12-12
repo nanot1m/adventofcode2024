@@ -5,7 +5,7 @@
 	"main": "scripts/solve.js",
 	"type": "module",
 	"scripts": {
-		"solve": "node scripts/solve.js",
+		"solve": "npx n exec 22 node scripts/solve.js",
 		"tpl": "node scripts/prepare.js"
 	},
 	"keywords": [],
@@ -20,6 +20,7 @@
 		"@typescript-eslint/utils": "6.13.1",
 		"eslint": "8.54.0",
 		"eslint-plugin-rulesdir": "0.2.2",
+		"n": "^10.1.0",
 		"ts-toolbelt": "9.6.0",
 		"tsutils": "3.21.0",
 		"typescript": "5.6.3"

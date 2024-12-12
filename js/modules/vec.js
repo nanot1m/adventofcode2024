@@ -1,7 +1,9 @@
 // @ts-check
 
+import { Lib } from "./index.js"
+
 /**
- * @typedef {[x: number, y: number]} Vec2
+ * @typedef {readonly [x: number, y: number] & {__opaque: 'StructVec2'}} Vec2
  */
 
 /**
@@ -13,14 +15,24 @@
  * @param {number} y
  * @returns {Vec2}
  */
-export const vec = (x, y) => [x, y]
+const cache = new Map()
+
+/**
+ * Allows compare vecs by reference, e.g. `vec(1, 2) === vec(1, 2)` will be true
+ */
+export function enableCachedVec() {
+	vec = (x, y) => Lib.getOrUpdate(cache, `${x},${y}`, () => [x, y])
+}
+
+/** @type {(x: number, y: number) => Vec2}  */
+export let vec = (x, y) => /** @type {any} */ ([x, y])
 
 /** @type {Record<Dir, Vec2>} */
 export const DIR_TO_VEC = {
-	U: [0, -1],
-	D: [0, 1],
-	L: [-1, 0],
-	R: [1, 0],
+	U: vec(0, -1),
+	D: vec(0, 1),
+	L: vec(-1, 0),
+	R: vec(1, 0),
 }
 
 export const DIRS_4 = [DIR_TO_VEC.U, DIR_TO_VEC.R, DIR_TO_VEC.D, DIR_TO_VEC.L]
@@ -37,6 +49,8 @@ export const DIRS_8 = [
 ]
 
 export const DIRS_4_DIAG = [vec(-1, -1), vec(1, -1), vec(-1, 1), vec(1, 1)]
+
+export const around = (/** @type {Vec2} */ vec, dirs = DIRS_8) => dirs.map((d) => add(vec, d))
 
 /**
  *
@@ -56,7 +70,7 @@ export const asDir = (dir) => {
  * @param {Vec2} vec
  * @returns {Vec2}
  */
-export const signed = ([x, y]) => [Math.sign(x), Math.sign(y)]
+export const signed = ([x, y]) => vec(Math.sign(x), Math.sign(y))
 
 /**
  *
@@ -64,7 +78,7 @@ export const signed = ([x, y]) => [Math.sign(x), Math.sign(y)]
  * @param {Vec2} vecB
  * @returns {Vec2}
  */
-export const add = ([x1, y1], [x2, y2]) => [x1 + x2, y1 + y2]
+export const add = ([x1, y1], [x2, y2]) => vec(x1 + x2, y1 + y2)
 
 /**
  *
@@ -72,7 +86,7 @@ export const add = ([x1, y1], [x2, y2]) => [x1 + x2, y1 + y2]
  * @param {Vec2} vecB
  * @returns {Vec2}
  */
-export const sub = ([x1, y1], [x2, y2]) => [x1 - x2, y1 - y2]
+export const sub = ([x1, y1], [x2, y2]) => vec(x1 - x2, y1 - y2)
 
 /**
  *
@@ -80,7 +94,7 @@ export const sub = ([x1, y1], [x2, y2]) => [x1 - x2, y1 - y2]
  * @param {number} s
  * @returns {Vec2}
  */
-export const scale = ([x, y], s) => [x * s, y * s]
+export const scale = ([x, y], s) => vec(x * s, y * s)
 
 /**
  *
@@ -107,7 +121,7 @@ export const fromDir = (dir) => DIR_TO_VEC[dir]
 /**
  * @returns {Vec2}
  */
-export const zero = () => [0, 0]
+export const zero = () => vec(0, 0)
 
 /**
  * @param {Vec2} vec
@@ -138,21 +152,21 @@ export const eq = (vecA, vecB) => vecA[0] === vecB[0] && vecA[1] === vecB[1]
  * @param {Vec2} vecB
  * @returns {Vec2}
  */
-export const min = (vecA, vecB) => [Math.min(vecA[0], vecB[0]), Math.min(vecA[1], vecB[1])]
+export const min = (vecA, vecB) => vec(Math.min(vecA[0], vecB[0]), Math.min(vecA[1], vecB[1]))
 
 /**
  * @param {Vec2} vecA
  * @param {Vec2} vecB
  * @returns {Vec2}
  */
-export const max = (vecA, vecB) => [Math.max(vecA[0], vecB[0]), Math.max(vecA[1], vecB[1])]
+export const max = (vecA, vecB) => vec(Math.max(vecA[0], vecB[0]), Math.max(vecA[1], vecB[1]))
 
 /**
  *
  * @param {Vec2} vecA
  * @returns {Vec2}
  */
-export const neg = (vecA) => [-vecA[0], -vecA[1]]
+export const neg = (vecA) => vec(-vecA[0], -vecA[1])
 
 /**
  * @param {Vec2} start

@@ -450,3 +450,10 @@ export function toString(x) {
 export function isInRange(value, min, max) {
 	return value >= min && value <= max
 }
+
+/**
+ * @param {T} x
+ * @template T
+ * @returns {T}
+ */
+export const identity = (x) => x
