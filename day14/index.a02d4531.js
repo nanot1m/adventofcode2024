@@ -605,7 +605,12 @@ const canvas = document.getElementById("canvas");
 if (!(canvas instanceof HTMLCanvasElement)) throw new Error("no canvas");
 const ctx = canvas.getContext("2d");
 if (!ctx) throw new Error("no ctx");
-(0, _commonJs.scaleCanvasToPixelRatio)(ctx, 100, 100);
+const width = 101;
+const height = 103;
+const scale = 3 // Math.min(10, Math.max(2, 200 / width))
+;
+const cols = 1;
+(0, _commonJs.scaleCanvasToPixelRatio)(ctx, cols * width * scale, height * scale);
 let raf = 0;
 let unsubscribe = ()=>{};
 /**
@@ -615,21 +620,20 @@ let unsubscribe = ()=>{};
     cancelAnimationFrame(raf);
     unsubscribe();
     const robots = (0, _14Js.parseInput)(input);
-    const width = 101;
-    const height = 103;
-    const scale = 4 // Math.min(10, Math.max(2, 200 / width))
-    ;
     (0, _commonJs.scaleCanvasToPixelRatio)(ctx, width * scale, height * scale);
     ctx.canvas.scrollIntoView({
         behavior: "smooth"
     });
     const drawRobots = (/** @type {{ pos: V.Vec2; vel: V.Vec2; }[]} */ robots)=>{
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "white";
         ctx.fillRect(0, 0, width * scale, height * scale);
         for (const robot of robots){
-            ctx.fillStyle = "green";
-            ctx.fillRect(robot.pos[0] * scale, robot.pos[1] * scale, scale, scale);
+            ctx.fillStyle = "#becfaa";
+            ctx.beginPath();
+            ctx.arc(robot.pos[0] * scale, robot.pos[1] * scale, scale / 2, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
         }
     };
     const timeInput = document.getElementById("time");
@@ -681,398 +685,305 @@ inputForm.addEventListener("submit", function(e) {
     draw(input.trim(), ctx);
 });
 
-},{"../../../js/solutions/14.js":"gNXSX","../../../js/modules/index.js":"Zicik","../common.js":"8wzUn","../../../js/modules/iterator-extensions.js":"8eMUF"}],"gNXSX":[function(require,module,exports,__globalThis) {
-// @ts-check
+},{"../../../js/modules/iterator-extensions.js":"8eMUF","../../../js/solutions/14.js":"gNXSX","../../../js/modules/index.js":"Zicik","../common.js":"8wzUn"}],"8eMUF":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "useExample", ()=>useExample);
-parcelHelpers.export(exports, "exampleInput", ()=>exampleInput);
-parcelHelpers.export(exports, "parseInput", ()=>parseInput);
 /**
- * @param {V.Vec2} pos
- * @param {V.Vec2} vel
- * @param {number} t
- * @param {number} width
- * @param {number} height
- */ parcelHelpers.export(exports, "calc", ()=>calc);
+ * @param {IteratorObject<number>} xs
+ */ parcelHelpers.export(exports, "sum", ()=>sum);
 /**
- * @param {InputType} input
- */ parcelHelpers.export(exports, "part1", ()=>part1);
+ * @param {IteratorObject<number>} xs
+ */ parcelHelpers.export(exports, "multiply", ()=>multiply);
 /**
- * @param {InputType} robots
- * @param {string} pattern
- */ parcelHelpers.export(exports, "robotsMatchesPattern", ()=>robotsMatchesPattern);
-/**
- * @param {number} width
- * @param {number} height
- */ parcelHelpers.export(exports, "next", ()=>next);
-parcelHelpers.export(exports, "pattern", ()=>pattern);
-/**
- * @param {InputType} input
- */ parcelHelpers.export(exports, "part2", ()=>part2);
-var _indexJs = require("../modules/index.js");
-var _itertoolsJs = require("../modules/itertools.js");
-var _map2DJs = require("../modules/map2d.js");
-var _parserJs = require("../modules/parser.js");
-const useExample = false;
-const exampleInput = `\
-p=0,4 v=3,-3
-p=6,3 v=-1,-3
-p=10,3 v=-1,2
-p=2,0 v=2,-1
-p=0,0 v=1,3
-p=3,0 v=-2,-2
-p=7,6 v=-1,-3
-p=3,0 v=-1,-2
-p=9,3 v=2,3
-p=7,3 v=-1,2
-p=2,4 v=2,-3
-p=9,5 v=-3,-3`;
-/** @typedef {ReturnType<typeof parseInput>} InputType */ const lineParser = (0, _parserJs.t).tpl`p=${"pos|vec"} v=${"vel|vec"}`;
-const parseInput = (0, _parserJs.t).arr(lineParser).parse;
-function calc(pos, vel, t, width, height) {
-    const target = (0, _indexJs.V).add(pos, (0, _indexJs.V).scale(vel, t));
-    return (0, _indexJs.V).vec((0, _indexJs.Lib).mod(target[0], width), (0, _indexJs.Lib).mod(target[1], height));
-}
-/**
- * @param {V.Vec2[]} positions
- * @param {number} width
- * @param {number} height
- */ function printDebug(positions, width, height, chWidth = 1) {
-    const debugMap = new (0, _map2DJs.Map2d)();
-    for (const pos of positions)debugMap.set(pos, (debugMap.get(pos) ?? 0) + 1);
-    const str = debugMap.toString({
-        topLeftPos: (0, _indexJs.V).vec(0, 0),
-        botRightPos: (0, _indexJs.V).vec(width - 1, height - 1),
-        valToString: (v)=>v ? "#".repeat(chWidth) : ".".repeat(chWidth)
-    });
-    return str;
-}
-function part1(input) {
-    const width = 101;
-    const height = 103;
-    const cx = (width - 1) / 2;
-    const cy = (height - 1) / 2;
-    return input.values().map((r)=>calc(r.pos, r.vel, 100, width, height)).filter((p)=>(0, _indexJs.V).x(p) !== cx && (0, _indexJs.V).y(p) !== cy).groupBy((pos)=>{
-        if ((0, _indexJs.V).x(pos) < cx && (0, _indexJs.V).y(pos) < cy) return 1;
-        if ((0, _indexJs.V).x(pos) > cx && (0, _indexJs.V).y(pos) < cy) return 2;
-        if ((0, _indexJs.V).x(pos) < cx && (0, _indexJs.V).y(pos) > cy) return 3;
-        return 4;
-    }).values().map((x)=>x.length).multiply();
-}
-/**
- * @param {string} str
- * @param {string} pattern
- */ function stringIncludesPattern(str, pattern) {
-    const lines = str.split("\n");
-    const patternLines = pattern.split("\n");
-    const res = lines.values().windowed(patternLines.length).find((window)=>window.every((line, i)=>line.includes(patternLines[i])));
-    return !!res;
-}
-function robotsMatchesPattern(robots, pattern) {
-    const str = printDebug(robots.map((r)=>r.pos), 101, 103, 1);
-    return stringIncludesPattern(str, pattern);
-}
-function next(width, height) {
-    return (/** @type {InputType} */ r)=>r.map(({ pos, vel })=>({
-                pos: calc(pos, vel, 1, width, height),
-                vel
-            }));
-}
-const pattern = `\
-....#....
-...###...
-..#####..
-.#######.
-`;
-function part2(input) {
-    const w = 101;
-    const h = 103;
-    return (0, _itertoolsJs.iterate)(input, next(w, h)).takeUntil((r)=>robotsMatchesPattern(r, pattern)).count();
-}
-
-},{"../modules/index.js":"Zicik","../modules/itertools.js":"hlPOX","../modules/map2d.js":"4JAEt","../modules/parser.js":"eJ4CG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Zicik":[function(require,module,exports,__globalThis) {
-// @ts-check
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "V", ()=>_vecJs);
-parcelHelpers.export(exports, "V3", ()=>_vec3Js);
-parcelHelpers.export(exports, "Lib", ()=>_libJs);
-parcelHelpers.export(exports, "Itertools", ()=>_itertoolsJs);
-parcelHelpers.export(exports, "PriorityQueue", ()=>(0, _priorityQueueJs.PriorityQueue));
-parcelHelpers.export(exports, "Graph", ()=>_graphJs);
-parcelHelpers.export(exports, "Array2d", ()=>_array2DJs);
-var _vecJs = require("./vec.js");
-var _vec3Js = require("./vec3.js");
+ * @template T
+ *
+ * @param {T[]} xs
+ * @param {number} count
+ * @param {T[]} [current]
+ * @returns {IteratorObject<T[]>}
+ */ parcelHelpers.export(exports, "combinations", ()=>combinations);
 var _libJs = require("./lib.js");
-var _itertoolsJs = require("./itertools.js");
-var _priorityQueueJs = require("./priority-queue.js");
-var _graphJs = require("./graph.js");
-var _array2DJs = require("./array2d.js");
-
-},{"./vec.js":"3tqfB","./vec3.js":"1RnTW","./lib.js":"evqQV","./itertools.js":"hlPOX","./priority-queue.js":"2eIv4","./graph.js":"hSzmA","./array2d.js":"70n2o","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3tqfB":[function(require,module,exports,__globalThis) {
-// @ts-check
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * Allows compare vecs by reference, e.g. `vec(1, 2) === vec(1, 2)` will be true
- */ parcelHelpers.export(exports, "enableCachedVec", ()=>enableCachedVec);
-parcelHelpers.export(exports, "vec", ()=>vec);
-parcelHelpers.export(exports, "DIR_TO_VEC", ()=>DIR_TO_VEC);
-parcelHelpers.export(exports, "DIRS_4", ()=>DIRS_4);
-parcelHelpers.export(exports, "DIRS_8", ()=>DIRS_8);
-parcelHelpers.export(exports, "DIRS_4_DIAG", ()=>DIRS_4_DIAG);
-parcelHelpers.export(exports, "around", ()=>around);
-parcelHelpers.export(exports, "asDir", ()=>asDir);
-parcelHelpers.export(exports, "signed", ()=>signed);
-parcelHelpers.export(exports, "add", ()=>add);
-parcelHelpers.export(exports, "sub", ()=>sub);
-parcelHelpers.export(exports, "scale", ()=>scale);
-parcelHelpers.export(exports, "cross", ()=>cross);
-parcelHelpers.export(exports, "dot", ()=>dot);
-parcelHelpers.export(exports, "fromDir", ()=>fromDir);
-parcelHelpers.export(exports, "zero", ()=>zero);
-parcelHelpers.export(exports, "x", ()=>x);
-parcelHelpers.export(exports, "y", ()=>y);
-parcelHelpers.export(exports, "isVec", ()=>isVec);
-parcelHelpers.export(exports, "eq", ()=>eq);
-parcelHelpers.export(exports, "min", ()=>min);
-parcelHelpers.export(exports, "max", ()=>max);
-parcelHelpers.export(exports, "neg", ()=>neg);
-/**
- * @param {Vec2} start
- * @param {Vec2} end
- */ parcelHelpers.export(exports, "segment", ()=>segment);
-parcelHelpers.export(exports, "ZERO", ()=>ZERO);
-parcelHelpers.export(exports, "len", ()=>len);
-parcelHelpers.export(exports, "cLen", ()=>cLen);
-parcelHelpers.export(exports, "mLen", ()=>mLen);
-parcelHelpers.export(exports, "inRange", ()=>inRange);
-parcelHelpers.export(exports, "toString", ()=>toString);
-var _indexJs = require("./index.js");
-/**
- * @typedef {readonly [x: number, y: number] & {__opaque: 'StructVec2'}} Vec2
- */ /**
- * @typedef {"U" | "R"| "D" | "L"} Dir
- */ /**
- * @param {number} x
- * @param {number} y
- * @returns {Vec2}
- */ const cache = new Map();
-function enableCachedVec() {
-    vec = (x, y)=>(0, _indexJs.Lib).getOrUpdate(cache, `${x},${y}`, ()=>[
-                x,
-                y
-            ]);
-}
-let vec = (x, y)=>/** @type {any} */ [
-        x,
-        y
-    ];
-const DIR_TO_VEC = {
-    U: vec(0, -1),
-    D: vec(0, 1),
-    L: vec(-1, 0),
-    R: vec(1, 0)
+Iterator.prototype.first = function() {
+    for (const x of this)return x;
 };
-const DIRS_4 = [
-    DIR_TO_VEC.U,
-    DIR_TO_VEC.R,
-    DIR_TO_VEC.D,
-    DIR_TO_VEC.L
-];
-const DIRS_8 = [
-    vec(-1, -1),
-    vec(0, -1),
-    vec(1, -1),
-    vec(-1, 0),
-    vec(1, 0),
-    vec(-1, 1),
-    vec(0, 1),
-    vec(1, 1)
-];
-const DIRS_4_DIAG = [
-    vec(-1, -1),
-    vec(1, -1),
-    vec(-1, 1),
-    vec(1, 1)
-];
-const around = (/** @type {Vec2} */ vec, dirs = DIRS_8)=>dirs.map((d)=>add(vec, d));
-const asDir = (dir)=>{
-    if (dir in DIR_TO_VEC) return /** @type {Dir} */ dir;
-    throw new Error(`Invalid direction: ${dir}`);
+/**
+ * @template T
+ *
+ * @param {T} defaultValue
+ */ Iterator.prototype.firstOrDefault = function(defaultValue) {
+    for (const x of this)return x;
+    return defaultValue;
 };
-const signed = ([x, y])=>vec(Math.sign(x), Math.sign(y));
-const add = ([x1, y1], [x2, y2])=>vec(x1 + x2, y1 + y2);
-const sub = ([x1, y1], [x2, y2])=>vec(x1 - x2, y1 - y2);
-const scale = ([x, y], s)=>vec(x * s, y * s);
-const cross = ([x1, y1], [x2, y2])=>x1 * y2 - y1 * x2;
-const dot = ([x1, y1], [x2, y2])=>x1 * x2 + y1 * y2;
-const fromDir = (dir)=>DIR_TO_VEC[dir];
-const zero = ()=>vec(0, 0);
-const x = (vec)=>vec[0];
-const y = (vec)=>vec[1];
-const isVec = (arg)=>Array.isArray(arg) && arg.length === 2 && typeof arg[0] === "number" && typeof arg[1] === "number";
-const eq = (vecA, vecB)=>vecA[0] === vecB[0] && vecA[1] === vecB[1];
-const min = (vecA, vecB)=>vec(Math.min(vecA[0], vecB[0]), Math.min(vecA[1], vecB[1]));
-const max = (vecA, vecB)=>vec(Math.max(vecA[0], vecB[0]), Math.max(vecA[1], vecB[1]));
-const neg = (vecA)=>vec(-vecA[0], -vecA[1]);
-function* segment(start, end) {
-    const delta = sub(end, start);
-    const dir = signed(delta);
-    const steps = cLen(start, end);
-    let pos = start;
-    yield pos;
-    for(let i = 0; i < steps; i++){
-        pos = add(pos, dir);
-        yield pos;
+Iterator.prototype.last = function() {
+    let last;
+    for (const x of this)last = x;
+    return last;
+};
+/**
+ * @param {number} n
+ */ Iterator.prototype.skip = function*(n) {
+    let i = 0;
+    for (const x of this){
+        if (i >= n) yield x;
+        i++;
     }
-}
-const ZERO = zero();
-const len = (vec)=>Math.sqrt(vec[0] ** 2 + vec[1] ** 2);
-const cLen = (vecA, vecB = zero())=>Math.max(Math.abs(vecA[0] - vecB[0]), Math.abs(vecA[1] - vecB[1]));
-const mLen = (vecA, vecB = zero())=>Math.abs(vecA[0] - vecB[0]) + Math.abs(vecA[1] - vecB[1]);
-const inRange = (vec, min, max)=>vec[0] >= min[0] && vec[0] <= max[0] && vec[1] >= min[1] && vec[1] <= max[1];
-const toString = ([x, y])=>`${x},${y}`;
-
-},{"./index.js":"Zicik","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports,__globalThis) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
 };
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, '__esModule', {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === 'default' || key === '__esModule' || Object.prototype.hasOwnProperty.call(dest, key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"1RnTW":[function(require,module,exports,__globalThis) {
-// @ts-check
 /**
- * @typedef {[x: number, y: number, z: number]} Vec3
- */ /**
- * @param {number} x
- * @param {number} y
- * @param {number} z
- * @returns {Vec3}
- */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "vec3", ()=>vec3);
-parcelHelpers.export(exports, "x", ()=>x);
-parcelHelpers.export(exports, "y", ()=>y);
-parcelHelpers.export(exports, "z", ()=>z);
-parcelHelpers.export(exports, "zero3", ()=>zero3);
-parcelHelpers.export(exports, "add", ()=>add);
-parcelHelpers.export(exports, "sub", ()=>sub);
-parcelHelpers.export(exports, "rot", ()=>rot);
-parcelHelpers.export(exports, "min", ()=>min);
-parcelHelpers.export(exports, "max", ()=>max);
-parcelHelpers.export(exports, "mLen", ()=>mLen);
+ * @param {number} n
+ */ Iterator.prototype.groupsOf = function*(n) {
+    let group = [];
+    for (const x of this){
+        group.push(x);
+        if (group.length === n) {
+            yield group;
+            group = [];
+        }
+    }
+    if (group.length > 0) yield group;
+};
+/**
+ * @param {(val: K) => T} keyFn
+ * @template T
+ * @template K
+ */ Iterator.prototype.groupBy = function(keyFn) {
+    const map = new Map();
+    for (const x of this){
+        const key = keyFn(x);
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(x);
+    }
+    return map;
+};
+function sum(xs) {
+    return xs.reduce((0, _libJs.add), 0);
+}
+Iterator.prototype.sum = function() {
+    return sum(this);
+};
+function multiply(xs) {
+    return xs.reduce((0, _libJs.mul), 1);
+}
+Iterator.prototype.multiply = function() {
+    return multiply(this);
+};
+/**
+ * @template T
+ */ Iterator.prototype.count = function(predicate = (/** @type {T} */ x)=>true) {
+    let count = 0;
+    for (const x of this)if (predicate(x)) count += 1;
+    return count;
+};
 /**
  *
- * @param {Vec3} start
- * @param {Vec3} end
- */ parcelHelpers.export(exports, "line", ()=>line);
-parcelHelpers.export(exports, "dot", ()=>dot);
-parcelHelpers.export(exports, "normalized", ()=>normalized);
-parcelHelpers.export(exports, "cross", ()=>cross);
-parcelHelpers.export(exports, "isZero", ()=>isZero);
-parcelHelpers.export(exports, "scale", ()=>scale);
-parcelHelpers.export(exports, "magnitudeSquared", ()=>magnitudeSquared);
-const vec3 = (x, y, z)=>[
-        x,
-        y,
-        z
-    ];
-const x = (vec)=>vec[0];
-const y = (vec)=>vec[1];
-const z = (vec)=>vec[2];
-const zero3 = ()=>[
-        0,
-        0,
-        0
-    ];
-const add = (vecA, vecB)=>[
-        vecA[0] + vecB[0],
-        vecA[1] + vecB[1],
-        vecA[2] + vecB[2]
-    ];
-const sub = (vecA, vecB)=>[
-        vecA[0] - vecB[0],
-        vecA[1] - vecB[1],
-        vecA[2] - vecB[2]
-    ];
-const rot = (vec, rot)=>{
-    const [x, y, z] = vec;
-    const [xRot, yRot, zRot] = rot;
-    return [
-        x * xRot[0] + y * xRot[1] + z * xRot[2],
-        x * yRot[0] + y * yRot[1] + z * yRot[2],
-        x * zRot[0] + y * zRot[1] + z * zRot[2]
-    ];
-};
-const min = (vecA, vecB)=>[
-        Math.min(vecA[0], vecB[0]),
-        Math.min(vecA[1], vecB[1]),
-        Math.min(vecA[2], vecB[2])
-    ];
-const max = (vecA, vecB)=>[
-        Math.max(vecA[0], vecB[0]),
-        Math.max(vecA[1], vecB[1]),
-        Math.max(vecA[2], vecB[2])
-    ];
-const mLen = (vecA, vecB = zero3())=>Math.abs(vecA[0] - vecB[0]) + Math.abs(vecA[1] - vecB[1]) + Math.abs(vecA[2] - vecB[2]);
-function* line(start, end) {
-    const delta = vec3(Math.sign(end[0] - start[0]), Math.sign(end[1] - start[1]), Math.sign(end[2] - start[2]));
-    let current = start;
-    while(mLen(current, end) > 0){
-        yield current;
-        current = add(current, delta);
+ * @param {Iterable<U>} iterableB
+ * @returns {IteratorObject<[T, U]>}
+ *
+ * @template T, U
+ */ Iterator.prototype.zip = function*(iterableB) {
+    const iterA = this[Symbol.iterator]();
+    const iterB = iterableB[Symbol.iterator]();
+    while(true){
+        const { value: a, done: doneA } = iterA.next();
+        const { value: b, done: doneB } = iterB.next();
+        if (doneA || doneB) return;
+        yield [
+            a,
+            b
+        ];
     }
-    yield end;
-}
-const dot = (vecA, vecB)=>vecA[0] * vecB[0] + vecA[1] * vecB[1] + vecA[2] * vecB[2];
-const normalized = (vec)=>{
-    const len = Math.sqrt(dot(vec, vec));
-    return [
-        vec[0] / len,
-        vec[1] / len,
-        vec[2] / len
-    ];
 };
-const cross = (vecA, vecB)=>[
-        vecA[1] * vecB[2] - vecA[2] * vecB[1],
-        vecA[2] * vecB[0] - vecA[0] * vecB[2],
-        vecA[0] * vecB[1] - vecA[1] * vecB[0]
-    ];
-const isZero = (vec)=>vec[0] === 0 && vec[1] === 0 && vec[2] === 0;
-const scale = (vec, factor)=>[
-        vec[0] * factor,
-        vec[1] * factor,
-        vec[2] * factor
-    ];
-const magnitudeSquared = (vec)=>dot(vec, vec);
+Iterator.prototype.indexed = function() {
+    return range(Infinity).zip(this);
+};
+/**
+ * @param {number} size
+ * @returns {IteratorObject<T[]>}
+ *
+ * @template T
+ */ Iterator.prototype.windowed = function* windowed(size) {
+    const buffer = [];
+    for (const x of this){
+        buffer.push(x);
+        if (buffer.length === size) {
+            yield buffer.slice();
+            buffer.shift();
+        }
+    }
+};
+/**
+ * @param {(value: T) => boolean} predicate
+ * @returns {number}
+ * @template T
+ */ Iterator.prototype.findIndex = function(predicate) {
+    let i = 0;
+    for (const x of this){
+        if (predicate(x)) return i;
+        i++;
+    }
+    return -1;
+};
+/**
+ * @param {T} value
+ * @returns {number}
+ * @template T
+ */ Iterator.prototype.indexOf = function(value) {
+    return this.findIndex((x)=>x === value);
+};
+/**
+ * @param {number} [n]
+ * @returns {IteratorObject<T>}
+ *
+ * @template T
+ */ Iterator.prototype.skipLast = function*(n = 1) {
+    if (n <= 0) {
+        yield* this;
+        return;
+    }
+    const buffer = Array(n);
+    let i = 0;
+    for (const x of this){
+        if (i >= n) yield buffer[i % n];
+        buffer[i % n] = x;
+        i++;
+    }
+};
+/**
+ *
+ * @param {number} every
+ * @param {number} [skipInitial]
+ * @returns {IteratorObject<T>}
+ *
+ * @template T
+ */ Iterator.prototype.takeEvery = function* takeEvery(every, skipInitial = 0) {
+    if (every <= 0) return;
+    if (skipInitial < 0) skipInitial = 0;
+    for (const x of this){
+        if (skipInitial === 0) {
+            yield x;
+            skipInitial = every;
+        }
+        skipInitial--;
+    }
+};
+/**
+ * @param {(value: T) => boolean} predicate
+ * @returns {IteratorObject<T>}
+ * @template T
+ */ Iterator.prototype.takeWhile = function* takeWhile(predicate) {
+    for (const x of this){
+        if (!predicate(x)) return;
+        yield x;
+    }
+};
+/**
+ * @param {(value: T) => boolean} predicate
+ * @returns {IteratorObject<T>}
+ * @template T
+ */ Iterator.prototype.takeUntil = function*(predicate) {
+    for (const x of this){
+        if (predicate(x)) return;
+        yield x;
+    }
+};
+/**
+ * @param {(arg: T) => any} [mapFn]
+ * @returns {IteratorObject<T>}
+ * @template T
+ */ Iterator.prototype.distinct = function*(mapFn = (x)=>x) {
+    const set = new Set();
+    for (const x of this){
+        const key = mapFn(x);
+        if (!set.has(key)) {
+            set.add(key);
+            yield x;
+        }
+    }
+};
+Iterator.prototype.min = function() {
+    let min;
+    for (const x of this)if (min === undefined || x < min) min = x;
+    return min;
+};
+Iterator.prototype.max = function() {
+    let max;
+    for (const x of this)if (max === undefined || x > max) max = x;
+    return max;
+};
+/**
+ * @template T
+ * @param {(arg: T) => number | string} fn
+ * @returns {T}
+ */ Iterator.prototype.maxBy = function maxBy(fn) {
+    let max;
+    let maxVal;
+    for (const x of this){
+        const val = fn(x);
+        if (max === undefined || val > maxVal) {
+            max = x;
+            maxVal = val;
+        }
+    }
+    return max;
+};
+/**
+ * @template T
+ */ Iterator.prototype.countFrequencies = function() {
+    return this.toMap((x)=>x, (x, map)=>(map.get(x) ?? 0) + 1);
+};
+function* combinations(xs, count, current = [], start = 0) {
+    if (count === 0) {
+        yield [
+            ...current
+        ];
+        return;
+    }
+    for(let i = start; i < xs.length; i++){
+        current.push(xs[i]);
+        yield* combinations(xs, count - 1, current, i + 1);
+        current.pop();
+    }
+}
+Iterator.prototype.combinations = function(/** @type {number} */ count) {
+    return combinations(this.toArray(), count);
+};
+/**
+ * @param {(arg: R, acc: Map<K,V>) => K} keyFn
+ * @param {(arg: R, acc: Map<K,V>) => V} valueFn
+ * @returns {Map<K,V>}
+ *
+ * @template R
+ * @template K
+ * @template V
+ */ Iterator.prototype.toMap = function(keyFn, valueFn) {
+    /** @type {Map<K, V>} */ const map = new Map();
+    for (const x of this)map.set(keyFn(x, map), valueFn(x, map));
+    return map;
+};
+Iterator.prototype.toSet = function() {
+    return new Set(this);
+};
+Iterator.prototype.lcm = function() {
+    return this.reduce((0, _libJs.lcm), 1);
+};
+/**
+ * @param {(x: T) => void} fn
+ * @template T
+ */ Iterator.prototype.tap = function*(fn) {
+    for (const x of this){
+        fn(x);
+        yield x;
+    }
+};
+/**
+ *
+ * @param {(x:Iterable<T>) => IteratorObject<U>} fn
+ * @template T
+ * @template U
+ */ Iterator.prototype.chain = function(fn) {
+    return fn(this);
+};
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"evqQV":[function(require,module,exports,__globalThis) {
+},{"./lib.js":"evqQV","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"evqQV":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -1469,7 +1380,288 @@ function isInRange(value, min, max) {
 }
 const identity = (x)=>x;
 
-},{"./index.js":"Zicik","./itertools.js":"hlPOX","./vec3.js":"1RnTW","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hlPOX":[function(require,module,exports,__globalThis) {
+},{"./index.js":"Zicik","./itertools.js":"hlPOX","./vec3.js":"1RnTW","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Zicik":[function(require,module,exports,__globalThis) {
+// @ts-check
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "V", ()=>_vecJs);
+parcelHelpers.export(exports, "V3", ()=>_vec3Js);
+parcelHelpers.export(exports, "Lib", ()=>_libJs);
+parcelHelpers.export(exports, "Itertools", ()=>_itertoolsJs);
+parcelHelpers.export(exports, "PriorityQueue", ()=>(0, _priorityQueueJs.PriorityQueue));
+parcelHelpers.export(exports, "Graph", ()=>_graphJs);
+parcelHelpers.export(exports, "Array2d", ()=>_array2DJs);
+var _vecJs = require("./vec.js");
+var _vec3Js = require("./vec3.js");
+var _libJs = require("./lib.js");
+var _itertoolsJs = require("./itertools.js");
+var _priorityQueueJs = require("./priority-queue.js");
+var _graphJs = require("./graph.js");
+var _array2DJs = require("./array2d.js");
+
+},{"./vec.js":"3tqfB","./vec3.js":"1RnTW","./lib.js":"evqQV","./itertools.js":"hlPOX","./priority-queue.js":"2eIv4","./graph.js":"hSzmA","./array2d.js":"70n2o","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3tqfB":[function(require,module,exports,__globalThis) {
+// @ts-check
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+/**
+ * Allows compare vecs by reference, e.g. `vec(1, 2) === vec(1, 2)` will be true
+ */ parcelHelpers.export(exports, "enableCachedVec", ()=>enableCachedVec);
+parcelHelpers.export(exports, "vec", ()=>vec);
+parcelHelpers.export(exports, "DIR_TO_VEC", ()=>DIR_TO_VEC);
+parcelHelpers.export(exports, "DIRS_4", ()=>DIRS_4);
+parcelHelpers.export(exports, "DIRS_8", ()=>DIRS_8);
+parcelHelpers.export(exports, "DIRS_4_DIAG", ()=>DIRS_4_DIAG);
+parcelHelpers.export(exports, "around", ()=>around);
+parcelHelpers.export(exports, "asDir", ()=>asDir);
+parcelHelpers.export(exports, "signed", ()=>signed);
+parcelHelpers.export(exports, "add", ()=>add);
+parcelHelpers.export(exports, "sub", ()=>sub);
+parcelHelpers.export(exports, "scale", ()=>scale);
+parcelHelpers.export(exports, "cross", ()=>cross);
+parcelHelpers.export(exports, "dot", ()=>dot);
+parcelHelpers.export(exports, "fromDir", ()=>fromDir);
+parcelHelpers.export(exports, "zero", ()=>zero);
+parcelHelpers.export(exports, "x", ()=>x);
+parcelHelpers.export(exports, "y", ()=>y);
+parcelHelpers.export(exports, "isVec", ()=>isVec);
+parcelHelpers.export(exports, "eq", ()=>eq);
+parcelHelpers.export(exports, "min", ()=>min);
+parcelHelpers.export(exports, "max", ()=>max);
+parcelHelpers.export(exports, "neg", ()=>neg);
+/**
+ * @param {Vec2} start
+ * @param {Vec2} end
+ */ parcelHelpers.export(exports, "segment", ()=>segment);
+parcelHelpers.export(exports, "ZERO", ()=>ZERO);
+parcelHelpers.export(exports, "len", ()=>len);
+parcelHelpers.export(exports, "cLen", ()=>cLen);
+parcelHelpers.export(exports, "mLen", ()=>mLen);
+parcelHelpers.export(exports, "inRange", ()=>inRange);
+parcelHelpers.export(exports, "toString", ()=>toString);
+var _indexJs = require("./index.js");
+/**
+ * @typedef {readonly [x: number, y: number] & {__opaque: 'StructVec2'}} Vec2
+ */ /**
+ * @typedef {"U" | "R"| "D" | "L"} Dir
+ */ /**
+ * @param {number} x
+ * @param {number} y
+ * @returns {Vec2}
+ */ const cache = new Map();
+function enableCachedVec() {
+    vec = (x, y)=>(0, _indexJs.Lib).getOrUpdate(cache, `${x},${y}`, ()=>[
+                x,
+                y
+            ]);
+}
+let vec = (x, y)=>/** @type {any} */ [
+        x,
+        y
+    ];
+const DIR_TO_VEC = {
+    U: vec(0, -1),
+    D: vec(0, 1),
+    L: vec(-1, 0),
+    R: vec(1, 0)
+};
+const DIRS_4 = [
+    DIR_TO_VEC.U,
+    DIR_TO_VEC.R,
+    DIR_TO_VEC.D,
+    DIR_TO_VEC.L
+];
+const DIRS_8 = [
+    vec(-1, -1),
+    vec(0, -1),
+    vec(1, -1),
+    vec(-1, 0),
+    vec(1, 0),
+    vec(-1, 1),
+    vec(0, 1),
+    vec(1, 1)
+];
+const DIRS_4_DIAG = [
+    vec(-1, -1),
+    vec(1, -1),
+    vec(-1, 1),
+    vec(1, 1)
+];
+const around = (/** @type {Vec2} */ vec, dirs = DIRS_8)=>dirs.map((d)=>add(vec, d));
+const asDir = (dir)=>{
+    if (dir in DIR_TO_VEC) return /** @type {Dir} */ dir;
+    throw new Error(`Invalid direction: ${dir}`);
+};
+const signed = ([x, y])=>vec(Math.sign(x), Math.sign(y));
+const add = ([x1, y1], [x2, y2])=>vec(x1 + x2, y1 + y2);
+const sub = ([x1, y1], [x2, y2])=>vec(x1 - x2, y1 - y2);
+const scale = ([x, y], s)=>vec(x * s, y * s);
+const cross = ([x1, y1], [x2, y2])=>x1 * y2 - y1 * x2;
+const dot = ([x1, y1], [x2, y2])=>x1 * x2 + y1 * y2;
+const fromDir = (dir)=>DIR_TO_VEC[dir];
+const zero = ()=>vec(0, 0);
+const x = (vec)=>vec[0];
+const y = (vec)=>vec[1];
+const isVec = (arg)=>Array.isArray(arg) && arg.length === 2 && typeof arg[0] === "number" && typeof arg[1] === "number";
+const eq = (vecA, vecB)=>vecA[0] === vecB[0] && vecA[1] === vecB[1];
+const min = (vecA, vecB)=>vec(Math.min(vecA[0], vecB[0]), Math.min(vecA[1], vecB[1]));
+const max = (vecA, vecB)=>vec(Math.max(vecA[0], vecB[0]), Math.max(vecA[1], vecB[1]));
+const neg = (vecA)=>vec(-vecA[0], -vecA[1]);
+function* segment(start, end) {
+    const delta = sub(end, start);
+    const dir = signed(delta);
+    const steps = cLen(start, end);
+    let pos = start;
+    yield pos;
+    for(let i = 0; i < steps; i++){
+        pos = add(pos, dir);
+        yield pos;
+    }
+}
+const ZERO = zero();
+const len = (vec)=>Math.sqrt(vec[0] ** 2 + vec[1] ** 2);
+const cLen = (vecA, vecB = zero())=>Math.max(Math.abs(vecA[0] - vecB[0]), Math.abs(vecA[1] - vecB[1]));
+const mLen = (vecA, vecB = zero())=>Math.abs(vecA[0] - vecB[0]) + Math.abs(vecA[1] - vecB[1]);
+const inRange = (vec, min, max)=>vec[0] >= min[0] && vec[0] <= max[0] && vec[1] >= min[1] && vec[1] <= max[1];
+const toString = ([x, y])=>`${x},${y}`;
+
+},{"./index.js":"Zicik","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports,__globalThis) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, '__esModule', {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === 'default' || key === '__esModule' || Object.prototype.hasOwnProperty.call(dest, key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"1RnTW":[function(require,module,exports,__globalThis) {
+// @ts-check
+/**
+ * @typedef {[x: number, y: number, z: number]} Vec3
+ */ /**
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @returns {Vec3}
+ */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "vec3", ()=>vec3);
+parcelHelpers.export(exports, "x", ()=>x);
+parcelHelpers.export(exports, "y", ()=>y);
+parcelHelpers.export(exports, "z", ()=>z);
+parcelHelpers.export(exports, "zero3", ()=>zero3);
+parcelHelpers.export(exports, "add", ()=>add);
+parcelHelpers.export(exports, "sub", ()=>sub);
+parcelHelpers.export(exports, "rot", ()=>rot);
+parcelHelpers.export(exports, "min", ()=>min);
+parcelHelpers.export(exports, "max", ()=>max);
+parcelHelpers.export(exports, "mLen", ()=>mLen);
+/**
+ *
+ * @param {Vec3} start
+ * @param {Vec3} end
+ */ parcelHelpers.export(exports, "line", ()=>line);
+parcelHelpers.export(exports, "dot", ()=>dot);
+parcelHelpers.export(exports, "normalized", ()=>normalized);
+parcelHelpers.export(exports, "cross", ()=>cross);
+parcelHelpers.export(exports, "isZero", ()=>isZero);
+parcelHelpers.export(exports, "scale", ()=>scale);
+parcelHelpers.export(exports, "magnitudeSquared", ()=>magnitudeSquared);
+const vec3 = (x, y, z)=>[
+        x,
+        y,
+        z
+    ];
+const x = (vec)=>vec[0];
+const y = (vec)=>vec[1];
+const z = (vec)=>vec[2];
+const zero3 = ()=>[
+        0,
+        0,
+        0
+    ];
+const add = (vecA, vecB)=>[
+        vecA[0] + vecB[0],
+        vecA[1] + vecB[1],
+        vecA[2] + vecB[2]
+    ];
+const sub = (vecA, vecB)=>[
+        vecA[0] - vecB[0],
+        vecA[1] - vecB[1],
+        vecA[2] - vecB[2]
+    ];
+const rot = (vec, rot)=>{
+    const [x, y, z] = vec;
+    const [xRot, yRot, zRot] = rot;
+    return [
+        x * xRot[0] + y * xRot[1] + z * xRot[2],
+        x * yRot[0] + y * yRot[1] + z * yRot[2],
+        x * zRot[0] + y * zRot[1] + z * zRot[2]
+    ];
+};
+const min = (vecA, vecB)=>[
+        Math.min(vecA[0], vecB[0]),
+        Math.min(vecA[1], vecB[1]),
+        Math.min(vecA[2], vecB[2])
+    ];
+const max = (vecA, vecB)=>[
+        Math.max(vecA[0], vecB[0]),
+        Math.max(vecA[1], vecB[1]),
+        Math.max(vecA[2], vecB[2])
+    ];
+const mLen = (vecA, vecB = zero3())=>Math.abs(vecA[0] - vecB[0]) + Math.abs(vecA[1] - vecB[1]) + Math.abs(vecA[2] - vecB[2]);
+function* line(start, end) {
+    const delta = vec3(Math.sign(end[0] - start[0]), Math.sign(end[1] - start[1]), Math.sign(end[2] - start[2]));
+    let current = start;
+    while(mLen(current, end) > 0){
+        yield current;
+        current = add(current, delta);
+    }
+    yield end;
+}
+const dot = (vecA, vecB)=>vecA[0] * vecB[0] + vecA[1] * vecB[1] + vecA[2] * vecB[2];
+const normalized = (vec)=>{
+    const len = Math.sqrt(dot(vec, vec));
+    return [
+        vec[0] / len,
+        vec[1] / len,
+        vec[2] / len
+    ];
+};
+const cross = (vecA, vecB)=>[
+        vecA[1] * vecB[2] - vecA[2] * vecB[1],
+        vecA[2] * vecB[0] - vecA[0] * vecB[2],
+        vecA[0] * vecB[1] - vecA[1] * vecB[0]
+    ];
+const isZero = (vec)=>vec[0] === 0 && vec[1] === 0 && vec[2] === 0;
+const scale = (vec, factor)=>[
+        vec[0] * factor,
+        vec[1] * factor,
+        vec[2] * factor
+    ];
+const magnitudeSquared = (vec)=>dot(vec, vec);
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hlPOX":[function(require,module,exports,__globalThis) {
 // @ts-check
 /**
  *
@@ -1985,7 +2177,117 @@ function transpose(xs) {
     return res;
 }
 
-},{"./index.js":"Zicik","./lib.js":"evqQV","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4JAEt":[function(require,module,exports,__globalThis) {
+},{"./index.js":"Zicik","./lib.js":"evqQV","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gNXSX":[function(require,module,exports,__globalThis) {
+// @ts-check
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "useExample", ()=>useExample);
+parcelHelpers.export(exports, "exampleInput", ()=>exampleInput);
+parcelHelpers.export(exports, "parseInput", ()=>parseInput);
+/**
+ * @param {V.Vec2} pos
+ * @param {V.Vec2} vel
+ * @param {number} t
+ * @param {number} width
+ * @param {number} height
+ */ parcelHelpers.export(exports, "calc", ()=>calc);
+/**
+ * @param {InputType} input
+ */ parcelHelpers.export(exports, "part1", ()=>part1);
+/**
+ * @param {InputType} robots
+ * @param {string} pattern
+ */ parcelHelpers.export(exports, "robotsMatchesPattern", ()=>robotsMatchesPattern);
+/**
+ * @param {number} width
+ * @param {number} height
+ */ parcelHelpers.export(exports, "next", ()=>next);
+parcelHelpers.export(exports, "pattern", ()=>pattern);
+/**
+ * @param {InputType} input
+ */ parcelHelpers.export(exports, "part2", ()=>part2);
+var _indexJs = require("../modules/index.js");
+var _itertoolsJs = require("../modules/itertools.js");
+var _map2DJs = require("../modules/map2d.js");
+var _parserJs = require("../modules/parser.js");
+const useExample = false;
+const exampleInput = `\
+p=0,4 v=3,-3
+p=6,3 v=-1,-3
+p=10,3 v=-1,2
+p=2,0 v=2,-1
+p=0,0 v=1,3
+p=3,0 v=-2,-2
+p=7,6 v=-1,-3
+p=3,0 v=-1,-2
+p=9,3 v=2,3
+p=7,3 v=-1,2
+p=2,4 v=2,-3
+p=9,5 v=-3,-3`;
+/** @typedef {ReturnType<typeof parseInput>} InputType */ const lineParser = (0, _parserJs.t).tpl`p=${"pos|vec"} v=${"vel|vec"}`;
+const parseInput = (0, _parserJs.t).arr(lineParser).parse;
+function calc(pos, vel, t, width, height) {
+    const target = (0, _indexJs.V).add(pos, (0, _indexJs.V).scale(vel, t));
+    return (0, _indexJs.V).vec((0, _indexJs.Lib).mod(target[0], width), (0, _indexJs.Lib).mod(target[1], height));
+}
+/**
+ * @param {V.Vec2[]} positions
+ * @param {number} width
+ * @param {number} height
+ */ function printDebug(positions, width, height, chWidth = 1) {
+    const debugMap = new (0, _map2DJs.Map2d)();
+    for (const pos of positions)debugMap.set(pos, (debugMap.get(pos) ?? 0) + 1);
+    const str = debugMap.toString({
+        topLeftPos: (0, _indexJs.V).vec(0, 0),
+        botRightPos: (0, _indexJs.V).vec(width - 1, height - 1),
+        valToString: (v)=>v ? "#".repeat(chWidth) : ".".repeat(chWidth)
+    });
+    return str;
+}
+function part1(input) {
+    const width = 101;
+    const height = 103;
+    const cx = (width - 1) / 2;
+    const cy = (height - 1) / 2;
+    return input.values().map((r)=>calc(r.pos, r.vel, 100, width, height)).filter((p)=>(0, _indexJs.V).x(p) !== cx && (0, _indexJs.V).y(p) !== cy).groupBy((pos)=>{
+        if ((0, _indexJs.V).x(pos) < cx && (0, _indexJs.V).y(pos) < cy) return 1;
+        if ((0, _indexJs.V).x(pos) > cx && (0, _indexJs.V).y(pos) < cy) return 2;
+        if ((0, _indexJs.V).x(pos) < cx && (0, _indexJs.V).y(pos) > cy) return 3;
+        return 4;
+    }).values().map((x)=>x.length).multiply();
+}
+/**
+ * @param {string} str
+ * @param {string} pattern
+ */ function stringIncludesPattern(str, pattern) {
+    const lines = str.split("\n");
+    const patternLines = pattern.split("\n");
+    const res = lines.values().windowed(patternLines.length).find((window)=>window.every((line, i)=>line.includes(patternLines[i])));
+    return !!res;
+}
+function robotsMatchesPattern(robots, pattern) {
+    const str = printDebug(robots.map((r)=>r.pos), 101, 103, 1);
+    return stringIncludesPattern(str, pattern);
+}
+function next(width, height) {
+    return (/** @type {InputType} */ r)=>r.map(({ pos, vel })=>({
+                pos: calc(pos, vel, 1, width, height),
+                vel
+            }));
+}
+const pattern = `\
+....#....
+...###...
+..#####..
+.#######.
+`;
+function part2(input) {
+    const w = 101;
+    const h = 103;
+    return (0, _itertoolsJs.iterate)(input, next(w, h)).takeUntil((r)=>robotsMatchesPattern(r, pattern)).count();
+}
+
+},{"../modules/index.js":"Zicik","../modules/itertools.js":"hlPOX","../modules/map2d.js":"4JAEt","../modules/parser.js":"eJ4CG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"4JAEt":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -2633,304 +2935,6 @@ function scaleCanvasToPixelRatio(ctx, width, height, scale = 1) {
     return pixelRatio;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8eMUF":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-/**
- * @param {IteratorObject<number>} xs
- */ parcelHelpers.export(exports, "sum", ()=>sum);
-/**
- * @param {IteratorObject<number>} xs
- */ parcelHelpers.export(exports, "multiply", ()=>multiply);
-/**
- * @template T
- *
- * @param {T[]} xs
- * @param {number} count
- * @param {T[]} [current]
- * @returns {IteratorObject<T[]>}
- */ parcelHelpers.export(exports, "combinations", ()=>combinations);
-var _libJs = require("./lib.js");
-Iterator.prototype.first = function() {
-    for (const x of this)return x;
-};
-/**
- * @template T
- *
- * @param {T} defaultValue
- */ Iterator.prototype.firstOrDefault = function(defaultValue) {
-    for (const x of this)return x;
-    return defaultValue;
-};
-Iterator.prototype.last = function() {
-    let last;
-    for (const x of this)last = x;
-    return last;
-};
-/**
- * @param {number} n
- */ Iterator.prototype.skip = function*(n) {
-    let i = 0;
-    for (const x of this){
-        if (i >= n) yield x;
-        i++;
-    }
-};
-/**
- * @param {number} n
- */ Iterator.prototype.groupsOf = function*(n) {
-    let group = [];
-    for (const x of this){
-        group.push(x);
-        if (group.length === n) {
-            yield group;
-            group = [];
-        }
-    }
-    if (group.length > 0) yield group;
-};
-/**
- * @param {(val: K) => T} keyFn
- * @template T
- * @template K
- */ Iterator.prototype.groupBy = function(keyFn) {
-    const map = new Map();
-    for (const x of this){
-        const key = keyFn(x);
-        if (!map.has(key)) map.set(key, []);
-        map.get(key).push(x);
-    }
-    return map;
-};
-function sum(xs) {
-    return xs.reduce((0, _libJs.add), 0);
-}
-Iterator.prototype.sum = function() {
-    return sum(this);
-};
-function multiply(xs) {
-    return xs.reduce((0, _libJs.mul), 1);
-}
-Iterator.prototype.multiply = function() {
-    return multiply(this);
-};
-/**
- * @template T
- */ Iterator.prototype.count = function(predicate = (/** @type {T} */ x)=>true) {
-    let count = 0;
-    for (const x of this)if (predicate(x)) count += 1;
-    return count;
-};
-/**
- *
- * @param {Iterable<U>} iterableB
- * @returns {IteratorObject<[T, U]>}
- *
- * @template T, U
- */ Iterator.prototype.zip = function*(iterableB) {
-    const iterA = this[Symbol.iterator]();
-    const iterB = iterableB[Symbol.iterator]();
-    while(true){
-        const { value: a, done: doneA } = iterA.next();
-        const { value: b, done: doneB } = iterB.next();
-        if (doneA || doneB) return;
-        yield [
-            a,
-            b
-        ];
-    }
-};
-Iterator.prototype.indexed = function() {
-    return range(Infinity).zip(this);
-};
-/**
- * @param {number} size
- * @returns {IteratorObject<T[]>}
- *
- * @template T
- */ Iterator.prototype.windowed = function* windowed(size) {
-    const buffer = [];
-    for (const x of this){
-        buffer.push(x);
-        if (buffer.length === size) {
-            yield buffer.slice();
-            buffer.shift();
-        }
-    }
-};
-/**
- * @param {(value: T) => boolean} predicate
- * @returns {number}
- * @template T
- */ Iterator.prototype.findIndex = function(predicate) {
-    let i = 0;
-    for (const x of this){
-        if (predicate(x)) return i;
-        i++;
-    }
-    return -1;
-};
-/**
- * @param {T} value
- * @returns {number}
- * @template T
- */ Iterator.prototype.indexOf = function(value) {
-    return this.findIndex((x)=>x === value);
-};
-/**
- * @param {number} [n]
- * @returns {IteratorObject<T>}
- *
- * @template T
- */ Iterator.prototype.skipLast = function*(n = 1) {
-    if (n <= 0) {
-        yield* this;
-        return;
-    }
-    const buffer = Array(n);
-    let i = 0;
-    for (const x of this){
-        if (i >= n) yield buffer[i % n];
-        buffer[i % n] = x;
-        i++;
-    }
-};
-/**
- *
- * @param {number} every
- * @param {number} [skipInitial]
- * @returns {IteratorObject<T>}
- *
- * @template T
- */ Iterator.prototype.takeEvery = function* takeEvery(every, skipInitial = 0) {
-    if (every <= 0) return;
-    if (skipInitial < 0) skipInitial = 0;
-    for (const x of this){
-        if (skipInitial === 0) {
-            yield x;
-            skipInitial = every;
-        }
-        skipInitial--;
-    }
-};
-/**
- * @param {(value: T) => boolean} predicate
- * @returns {IteratorObject<T>}
- * @template T
- */ Iterator.prototype.takeWhile = function* takeWhile(predicate) {
-    for (const x of this){
-        if (!predicate(x)) return;
-        yield x;
-    }
-};
-/**
- * @param {(value: T) => boolean} predicate
- * @returns {IteratorObject<T>}
- * @template T
- */ Iterator.prototype.takeUntil = function*(predicate) {
-    for (const x of this){
-        if (predicate(x)) return;
-        yield x;
-    }
-};
-/**
- * @param {(arg: T) => any} [mapFn]
- * @returns {IteratorObject<T>}
- * @template T
- */ Iterator.prototype.distinct = function*(mapFn = (x)=>x) {
-    const set = new Set();
-    for (const x of this){
-        const key = mapFn(x);
-        if (!set.has(key)) {
-            set.add(key);
-            yield x;
-        }
-    }
-};
-Iterator.prototype.min = function() {
-    let min;
-    for (const x of this)if (min === undefined || x < min) min = x;
-    return min;
-};
-Iterator.prototype.max = function() {
-    let max;
-    for (const x of this)if (max === undefined || x > max) max = x;
-    return max;
-};
-/**
- * @template T
- * @param {(arg: T) => number | string} fn
- * @returns {T}
- */ Iterator.prototype.maxBy = function maxBy(fn) {
-    let max;
-    let maxVal;
-    for (const x of this){
-        const val = fn(x);
-        if (max === undefined || val > maxVal) {
-            max = x;
-            maxVal = val;
-        }
-    }
-    return max;
-};
-/**
- * @template T
- */ Iterator.prototype.countFrequencies = function() {
-    return this.toMap((x)=>x, (x, map)=>(map.get(x) ?? 0) + 1);
-};
-function* combinations(xs, count, current = [], start = 0) {
-    if (count === 0) {
-        yield [
-            ...current
-        ];
-        return;
-    }
-    for(let i = start; i < xs.length; i++){
-        current.push(xs[i]);
-        yield* combinations(xs, count - 1, current, i + 1);
-        current.pop();
-    }
-}
-Iterator.prototype.combinations = function(/** @type {number} */ count) {
-    return combinations(this.toArray(), count);
-};
-/**
- * @param {(arg: R, acc: Map<K,V>) => K} keyFn
- * @param {(arg: R, acc: Map<K,V>) => V} valueFn
- * @returns {Map<K,V>}
- *
- * @template R
- * @template K
- * @template V
- */ Iterator.prototype.toMap = function(keyFn, valueFn) {
-    /** @type {Map<K, V>} */ const map = new Map();
-    for (const x of this)map.set(keyFn(x, map), valueFn(x, map));
-    return map;
-};
-Iterator.prototype.toSet = function() {
-    return new Set(this);
-};
-Iterator.prototype.lcm = function() {
-    return this.reduce((0, _libJs.lcm), 1);
-};
-/**
- * @param {(x: T) => void} fn
- * @template T
- */ Iterator.prototype.tap = function*(fn) {
-    for (const x of this){
-        fn(x);
-        yield x;
-    }
-};
-/**
- *
- * @param {(x:Iterable<T>) => IteratorObject<U>} fn
- * @template T
- * @template U
- */ Iterator.prototype.chain = function(fn) {
-    return fn(this);
-};
-
-},{"./lib.js":"evqQV","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fmZhM","aZTvN"], "aZTvN", "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fmZhM","aZTvN"], "aZTvN", "parcelRequire94c2")
 
 //# sourceMappingURL=index.a02d4531.js.map
