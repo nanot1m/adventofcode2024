@@ -142,14 +142,14 @@
       this[globalName] = mainExports;
     }
   }
-})({"fmZhM":[function(require,module,exports,__globalThis) {
+})({"lQ2LT":[function(require,module,exports,__globalThis) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "d6ea1d42532a7575";
 var HMR_USE_SSE = false;
-module.bundle.HMR_BUNDLE_ID = "8f79f1b7a02d4531";
+module.bundle.HMR_BUNDLE_ID = "83aa5a85783677bc";
 "use strict";
 /* global HMR_HOST, HMR_PORT, HMR_ENV_HASH, HMR_SECURE, HMR_USE_SSE, chrome, browser, __parcel__import__, __parcel__importScripts__, ServiceWorkerGlobalScope */ /*::
 import type {
@@ -595,84 +595,111 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
     }
 }
 
-},{}],"aZTvN":[function(require,module,exports,__globalThis) {
+},{}],"gdfmp":[function(require,module,exports,__globalThis) {
 // @ts-check
 var _iteratorExtensionsJs = require("../../../js/modules/iterator-extensions.js");
-var _14Js = require("../../../js/solutions/14.js");
+var _15Js = require("../../../js/solutions/15.js");
 var _indexJs = require("../../../js/modules/index.js");
 var _commonJs = require("../common.js");
 const canvas = document.getElementById("canvas");
 if (!(canvas instanceof HTMLCanvasElement)) throw new Error("no canvas");
 const ctx = canvas.getContext("2d");
 if (!ctx) throw new Error("no ctx");
-const width = 101;
-const height = 103;
-const scale = 3 // Math.min(10, Math.max(2, 200 / width))
-;
-const cols = 1;
-(0, _commonJs.scaleCanvasToPixelRatio)(ctx, cols * width * scale, height * scale);
+const INIT_WIDTH = 300;
+const INIT_HEIGHT = 300;
+const INIT_SCALE = 1;
+(0, _commonJs.scaleCanvasToPixelRatio)(ctx, INIT_WIDTH * INIT_SCALE, INIT_HEIGHT * INIT_SCALE);
+const colors = {
+    green: "#91cfa1",
+    red: "#ea859a",
+    yellow: "#fef59d",
+    text: '#fee15b'
+};
 let raf = 0;
 let unsubscribe = ()=>{};
 /**
  * @param {string} input
  * @param {CanvasRenderingContext2D} ctx
- */ function draw(input, ctx) {
+ * @param {boolean} part2
+ */ function draw(input, ctx, part2) {
     cancelAnimationFrame(raf);
     unsubscribe();
-    const robots = (0, _14Js.parseInput)(input);
-    (0, _commonJs.scaleCanvasToPixelRatio)(ctx, width * scale, height * scale);
+    let [map, arrows] = (0, _15Js.parseInput)(input);
+    let width = window.innerWidth / 2 - 32;
+    let height = width;
+    if (part2) {
+        map = (0, _15Js.widenMap)(map);
+        width *= 2;
+    }
+    const mapWidth = map[0].length;
+    const scale = width / mapWidth;
+    (0, _commonJs.scaleCanvasToPixelRatio)(ctx, width, height);
     ctx.canvas.scrollIntoView({
         behavior: "smooth"
     });
-    const drawRobots = (/** @type {{ pos: V.Vec2; vel: V.Vec2; }[]} */ robots)=>{
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, width * scale, height * scale);
-        for (const robot of robots){
-            ctx.fillStyle = "#becfaa";
-            ctx.beginPath();
-            ctx.arc(robot.pos[0] * scale, robot.pos[1] * scale, scale / 2, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fill();
-        }
+    const drawMap = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ robot)=>{
+        ctx.clearRect(0, 0, width, height);
+        ctx.font = `${scale}px monospace`;
+        map.forEach((row, y)=>{
+            row.forEach((cell, x)=>{
+                ctx.fillStyle = 'white';
+                ctx.fillRect(x * scale, y * scale, scale, scale);
+                const padding = scale * 0.05;
+                // draw floor tile
+                ctx.fillStyle = colors.yellow;
+                ctx.fillRect(x * scale + padding, y * scale + padding, scale - padding * 2, scale - padding * 2);
+                ctx.font = `${scale}px monospace`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "top";
+                if ((0, _indexJs.V).eq((0, _indexJs.V).vec(x, y), robot)) {
+                    // draw robot emoji
+                    ctx.fillStyle = colors.text;
+                    ctx.fillText("\uD83E\uDD16", x * scale + scale / 2, y * scale);
+                }
+                if (cell === "#") {
+                    // draw wall
+                    ctx.fillStyle = colors.red;
+                    ctx.fillRect(x * scale + padding, y * scale + padding, scale - padding * 2, scale - padding * 2);
+                    ctx.fillStyle = colors.text;
+                    ctx.fillText(cell, x * scale + scale / 2, y * scale + padding * 2);
+                }
+                if (cell === "O") {
+                    // draw box on the floor
+                    ctx.fillStyle = colors.green;
+                    ctx.fillRect(x * scale + padding, y * scale + padding, scale - padding * 2, scale - padding * 2);
+                    ctx.fillStyle = colors.text;
+                    ctx.fillText(cell, x * scale + scale / 2, y * scale + padding * 2);
+                }
+                if (cell === "[") {
+                    // draw box on the floor
+                    ctx.fillStyle = colors.green;
+                    ctx.fillRect(x * scale + padding, y * scale + padding, scale - padding, scale - padding * 2);
+                    ctx.fillStyle = colors.text;
+                    ctx.fillText(cell, x * scale + scale / 2, y * scale + padding * 2);
+                }
+                if (cell === "]") {
+                    // draw box on the floor
+                    ctx.fillStyle = colors.green;
+                    ctx.fillRect(x * scale, y * scale + padding, scale - padding, scale - padding * 2);
+                    ctx.fillStyle = colors.text;
+                    ctx.fillText(cell, x * scale + scale / 2, y * scale + padding * 2);
+                }
+            });
+        });
     };
-    const timeInput = document.getElementById("time");
-    const timeOutput = document.getElementById("time-output");
-    if (!(timeInput instanceof HTMLInputElement)) throw new Error("no input");
-    if (!(timeOutput instanceof HTMLSpanElement)) throw new Error("no output");
-    let time = 0;
-    const refreshRobotDisplay = function() {
-        const t = parseInt(this.value);
-        if (isNaN(t)) return;
-        time = t;
-        const newRobots = robots.map((robot)=>({
-                pos: (0, _14Js.calc)(robot.pos, robot.vel, t, width, height),
-                vel: robot.vel
-            }));
-        drawRobots(newRobots);
-        const timeStr = t.toString();
-        timeOutput.textContent = timeStr;
-    };
-    timeInput.disabled = false;
-    timeInput.addEventListener("input", refreshRobotDisplay);
-    unsubscribe = ()=>timeInput.removeEventListener("input", refreshRobotDisplay);
-    raf = requestAnimationFrame(function render() {
-        let newRobots = robots;
-        for(let i = 0; i < 10; i++){
-            time++;
-            newRobots = robots.map((robot)=>({
-                    pos: (0, _14Js.calc)(robot.pos, robot.vel, time, width, height),
-                    vel: robot.vel
-                }));
-            const timeStr = time.toString();
-            timeOutput.textContent = timeStr;
-            timeInput.value = timeStr;
-            if ((0, _14Js.robotsMatchesPattern)(newRobots, (0, _14Js.pattern))) {
-                drawRobots(newRobots);
+    const iter = (0, _15Js.moves)(map, arrows);
+    let lastDt = 0;
+    raf = requestAnimationFrame(function render(dt) {
+        if (dt - lastDt > 30) {
+            lastDt = dt;
+            const { value, done } = iter.next();
+            if (done) {
+                unsubscribe();
                 return;
             }
+            const [robot, map] = value;
+            drawMap(map, robot);
         }
-        drawRobots(newRobots);
         raf = requestAnimationFrame(render);
     });
 }
@@ -682,10 +709,33 @@ inputForm.addEventListener("submit", function(e) {
     e.preventDefault();
     const formData = new FormData(this);
     const input = formData.get("input")?.toString() ?? "";
-    draw(input.trim(), ctx);
+    draw(input.trim(), ctx, formData.get("part2")?.toString() === "on");
 });
+// @ts-ignore
+inputForm.querySelector("#input").textContent = `\
+##########
+#..O..O.O#
+#......O.#
+#.OO..O.O#
+#..O@..O.#
+#O#..O...#
+#O..O..O.#
+#.OO.O.OO#
+#....O...#
+##########
 
-},{"../../../js/modules/iterator-extensions.js":"dc4LW","../../../js/solutions/14.js":"4fds3","../../../js/modules/index.js":"6dHdC","../common.js":"8wzUn"}],"4fds3":[function(require,module,exports,__globalThis) {
+<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
+vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
+><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
+<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
+^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
+^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
+>^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
+<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
+^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
+v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^`;
+
+},{"../../../js/modules/iterator-extensions.js":"dc4LW","../../../js/solutions/15.js":"bQwsE","../../../js/modules/index.js":"6dHdC","../common.js":"8wzUn"}],"bQwsE":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -693,84 +743,132 @@ parcelHelpers.export(exports, "useExample", ()=>useExample);
 parcelHelpers.export(exports, "exampleInput", ()=>exampleInput);
 parcelHelpers.export(exports, "parseInput", ()=>parseInput);
 /**
- * @param {V.Vec2} pos
- * @param {V.Vec2} vel
- * @param {number} t
- */ parcelHelpers.export(exports, "calc", ()=>calc);
+ *
+ * @param {string[][]} map
+ * @param {V.Arrow[]} arrows
+ */ parcelHelpers.export(exports, "moves", ()=>moves);
 /**
  * @param {InputType} input
  */ parcelHelpers.export(exports, "part1", ()=>part1);
 /**
- * @param {InputType} robots
- * @param {string} pattern
- */ parcelHelpers.export(exports, "robotsMatchesPattern", ()=>robotsMatchesPattern);
-/**
- * @param {InputType} r
- */ parcelHelpers.export(exports, "next", ()=>next);
-parcelHelpers.export(exports, "pattern", ()=>pattern);
+ * @param {string[][]} map
+ */ parcelHelpers.export(exports, "widenMap", ()=>widenMap);
 /**
  * @param {InputType} input
  */ parcelHelpers.export(exports, "part2", ()=>part2);
 var _indexJs = require("../modules/index.js");
-var _itertoolsJs = require("../modules/itertools.js");
+var _libJs = require("../modules/lib.js");
 var _parserJs = require("../modules/parser.js");
 const useExample = false;
 const exampleInput = `\
-p=0,4 v=3,-3
-p=6,3 v=-1,-3
-p=10,3 v=-1,2
-p=2,0 v=2,-1
-p=0,0 v=1,3
-p=3,0 v=-2,-2
-p=7,6 v=-1,-3
-p=3,0 v=-1,-2
-p=9,3 v=2,3
-p=7,3 v=-1,2
-p=2,4 v=2,-3
-p=9,5 v=-3,-3`;
-const width = 101;
-const height = 103;
-/** @typedef {ReturnType<typeof parseInput>} InputType */ const lineParser = (0, _parserJs.t).tpl`p=${"pos|vec"} v=${"vel|vec"}`;
-const parseInput = (0, _parserJs.t).arr(lineParser).parse;
-function calc(pos, vel, t) {
-    const target = (0, _indexJs.V).add(pos, (0, _indexJs.V).scale(vel, t));
-    return (0, _indexJs.V).vec((0, _indexJs.Lib).mod(target[0], width), (0, _indexJs.Lib).mod(target[1], height));
-}
+##########
+#..O..O.O#
+#......O.#
+#.OO..O.O#
+#..O@..O.#
+#O#..O...#
+#O..O..O.#
+#.OO.O.OO#
+#....O...#
+##########
+
+<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
+vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
+><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
+<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
+^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
+^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
+>^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
+<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
+^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
+v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^`;
+const parseInput = (0, _parserJs.t).tuple([
+    (0, _indexJs.Array2d),
+    (0, _parserJs.t).str().map((l)=>l.replaceAll("\n", "")).map((l)=>l.split("").map((0, _indexJs.V).asArrow))
+]).parse;
+const isBox = (/** @type {string} */ c)=>c === "O" || c === "[" || c === "]";
+const boxPositions = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ pos)=>(0, _indexJs.Array2d).get(map, pos) === "[" ? [
+        pos,
+        (0, _indexJs.V).add(pos, (0, _indexJs.V).DIR_TO_VEC.R)
+    ] // []
+     : (0, _indexJs.Array2d).get(map, pos) === "]" ? [
+        (0, _indexJs.V).add(pos, (0, _indexJs.V).DIR_TO_VEC.L),
+        pos
+    ] // []
+     : [
+        pos
+    ] // O
+;
 /**
- * @param {V.Vec2[]} positions
- */ function print(positions) {
-    const arr = Array.from({
-        length: height
-    }, ()=>Array(width).fill("."));
-    for (const pos of positions)(0, _indexJs.Array2d).set(arr, pos, "#");
-    return arr.map((line)=>line.join("")).join("\n");
+ * @param {string[][]} map
+ * @param {V.Vec2} pos
+ * @param {V.Arrow} arrow
+ */ function makeMove(map, pos, arrow) {
+    const dir = (0, _indexJs.V).fromArrow(arrow);
+    const targetPos = (0, _indexJs.V).add(pos, dir);
+    if ((0, _indexJs.Array2d).get(map, targetPos) === "#") return pos;
+    if ((0, _indexJs.Array2d).get(map, targetPos) === ".") return targetPos;
+    if (isBox((0, _indexJs.Array2d).get(map, targetPos))) {
+        const allBoxes = [];
+        let queue = boxPositions(map, targetPos);
+        const visited = new Set();
+        while(queue.length > 0){
+            const box = queue.pop();
+            if (visited.has((0, _indexJs.V).toString(box))) continue;
+            visited.add((0, _indexJs.V).toString(box));
+            allBoxes.push(box);
+            const next = (0, _indexJs.V).add(box, dir);
+            if (isBox((0, _indexJs.Array2d).get(map, next))) queue.push(...boxPositions(map, next));
+        }
+        const canMove = allBoxes.every((box)=>(0, _indexJs.Array2d).get(map, (0, _indexJs.V).add(box, dir)) !== "#");
+        if (!canMove) return pos;
+        // sort by moving direction
+        allBoxes.sort((a, b)=>(0, _indexJs.V).mLen(b, targetPos) - (0, _indexJs.V).mLen(a, targetPos));
+        for (const box of allBoxes){
+            const value = (0, _indexJs.Array2d).get(map, box);
+            (0, _indexJs.Array2d).set(map, box, ".");
+            (0, _indexJs.Array2d).set(map, (0, _indexJs.V).add(box, dir), value);
+        }
+        return targetPos;
+    }
+    throw new Error("Invalid move");
+}
+function* moves(map, arrows) {
+    const start = (0, _indexJs.Array2d).traverse(map).find((p)=>p.value === "@").pos;
+    (0, _indexJs.Array2d).set(map, start, ".");
+    let cur = start;
+    yield (0, _libJs.tuple)(cur, map, "start");
+    for (const arrow of arrows){
+        cur = makeMove(map, cur, arrow);
+        yield (0, _libJs.tuple)(cur, map, arrow);
+    }
 }
 function part1(input) {
-    const width = 101;
-    const height = 103;
-    const cx = (width - 1) / 2;
-    const cy = (height - 1) / 2;
-    return input.values().map((r)=>calc(r.pos, r.vel, 100)).filter((p)=>(0, _indexJs.V).x(p) !== cx && (0, _indexJs.V).y(p) !== cy).groupBy((pos)=>{
-        if ((0, _indexJs.V).x(pos) < cx && (0, _indexJs.V).y(pos) < cy) return 1;
-        if ((0, _indexJs.V).x(pos) > cx && (0, _indexJs.V).y(pos) < cy) return 2;
-        if ((0, _indexJs.V).x(pos) < cx && (0, _indexJs.V).y(pos) > cy) return 3;
-        return 4;
-    }).values().map((x)=>x.length).multiply();
+    const [map, arrows] = input;
+    const lst = moves(map, arrows).last();
+    return (0, _indexJs.Array2d).traverse(lst[1]).filter((p)=>p.value === "O").map((p)=>(0, _indexJs.V).y(p.pos) * 100 + (0, _indexJs.V).x(p.pos)).sum();
 }
-function robotsMatchesPattern(robots, pattern) {
-    return print(robots.map((r)=>r.pos)).includes(pattern);
-}
-function next(r) {
-    return r.map(({ pos, vel })=>({
-            pos: calc(pos, vel, 1),
-            vel
+function widenMap(map) {
+    return map.map((row)=>row.flatMap((cell)=>{
+            return cell === "#" ? [
+                "#",
+                "#"
+            ] : cell === "O" ? [
+                "[",
+                "]"
+            ] : [
+                cell,
+                "."
+            ];
         }));
 }
-const pattern = "#".repeat(10);
 function part2(input) {
-    return (0, _itertoolsJs.iterate)(input, next).map((r)=>r.map(({ pos })=>pos)).map((r)=>print(r)).takeUntil((str)=>str.includes(pattern)).count();
+    const [map, arrows] = input;
+    const wideMap = widenMap(map);
+    const lst = moves(wideMap, arrows).last();
+    return (0, _indexJs.Array2d).traverse(lst[1]).filter((p)=>p.value === "[").map((p)=>(0, _indexJs.V).y(p.pos) * 100 + (0, _indexJs.V).x(p.pos)).sum();
 }
 
-},{"../modules/index.js":"6dHdC","../modules/itertools.js":"cqQj6","../modules/parser.js":"5eBSb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["fmZhM","aZTvN"], "aZTvN", "parcelRequire94c2")
+},{"../modules/index.js":"6dHdC","../modules/lib.js":"bDK29","../modules/parser.js":"5eBSb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["lQ2LT","gdfmp"], "gdfmp", "parcelRequire94c2")
 
-//# sourceMappingURL=index.a02d4531.js.map
+//# sourceMappingURL=index.783677bc.js.map
