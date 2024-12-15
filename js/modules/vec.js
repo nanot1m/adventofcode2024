@@ -11,6 +11,10 @@ import { Lib } from "./index.js"
  */
 
 /**
+ * @typedef {"^" | ">" | "v" | "<"} Arrow
+ */
+
+/**
  * @param {number} x
  * @param {number} y
  * @returns {Vec2}
@@ -33,6 +37,14 @@ export const DIR_TO_VEC = {
 	D: vec(0, 1),
 	L: vec(-1, 0),
 	R: vec(1, 0),
+}
+
+/** @type {Record<Arrow, Vec2>} */
+export const ARROW_TO_VEC = {
+	"^": vec(0, -1),
+	v: vec(0, 1),
+	"<": vec(-1, 0),
+	">": vec(1, 0),
 }
 
 export const DIRS_4 = [DIR_TO_VEC.U, DIR_TO_VEC.R, DIR_TO_VEC.D, DIR_TO_VEC.L]
@@ -60,6 +72,18 @@ export const around = (/** @type {Vec2} */ vec, dirs = DIRS_8) => dirs.map((d) =
 export const asDir = (dir) => {
 	if (dir in DIR_TO_VEC) {
 		return /** @type {Dir} */ (dir)
+	}
+
+	throw new Error(`Invalid direction: ${dir}`)
+}
+
+/**
+ * @param {string} dir
+ * @returns {Arrow}
+ */
+export const asArrow = (dir) => {
+	if (dir in ARROW_TO_VEC) {
+		return /** @type {Arrow} */ (dir)
 	}
 
 	throw new Error(`Invalid direction: ${dir}`)
@@ -117,6 +141,12 @@ export const dot = ([x1, y1], [x2, y2]) => x1 * x2 + y1 * y2
  * @returns {Vec2}
  */
 export const fromDir = (dir) => DIR_TO_VEC[dir]
+
+/**
+ * @param {Arrow} arrow
+ * @returns {Vec2}
+ */
+export const fromArrow = (arrow) => ARROW_TO_VEC[arrow]
 
 /**
  * @returns {Vec2}
