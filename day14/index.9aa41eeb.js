@@ -142,14 +142,14 @@
       this[globalName] = mainExports;
     }
   }
-})({"9AZGF":[function(require,module,exports,__globalThis) {
+})({"2zNZI":[function(require,module,exports,__globalThis) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "d6ea1d42532a7575";
 var HMR_USE_SSE = false;
-module.bundle.HMR_BUNDLE_ID = "af99ac958d409192";
+module.bundle.HMR_BUNDLE_ID = "3d5d815d9aa41eeb";
 "use strict";
 /* global HMR_HOST, HMR_PORT, HMR_ENV_HASH, HMR_SECURE, HMR_USE_SSE, chrome, browser, __parcel__import__, __parcel__importScripts__, ServiceWorkerGlobalScope */ /*::
 import type {
@@ -595,7 +595,7 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
     }
 }
 
-},{}],"8eMUF":[function(require,module,exports,__globalThis) {
+},{}],"dc4LW":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 /**
@@ -893,7 +893,7 @@ Iterator.prototype.lcm = function() {
     return fn(this);
 };
 
-},{"./lib.js":"evqQV","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"evqQV":[function(require,module,exports,__globalThis) {
+},{"./lib.js":"bDK29","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"bDK29":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -1290,7 +1290,7 @@ function isInRange(value, min, max) {
 }
 const identity = (x)=>x;
 
-},{"./index.js":"Zicik","./itertools.js":"hlPOX","./vec3.js":"1RnTW","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"Zicik":[function(require,module,exports,__globalThis) {
+},{"./index.js":"6dHdC","./itertools.js":"cqQj6","./vec3.js":"2gsaT","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"6dHdC":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -1309,7 +1309,7 @@ var _priorityQueueJs = require("./priority-queue.js");
 var _graphJs = require("./graph.js");
 var _array2DJs = require("./array2d.js");
 
-},{"./vec.js":"3tqfB","./vec3.js":"1RnTW","./lib.js":"evqQV","./itertools.js":"hlPOX","./priority-queue.js":"2eIv4","./graph.js":"hSzmA","./array2d.js":"70n2o","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"3tqfB":[function(require,module,exports,__globalThis) {
+},{"./vec.js":"9wCUK","./vec3.js":"2gsaT","./lib.js":"bDK29","./itertools.js":"cqQj6","./priority-queue.js":"81eYO","./graph.js":"1OoBE","./array2d.js":"aX1eo","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"9wCUK":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -1351,7 +1351,6 @@ parcelHelpers.export(exports, "cLen", ()=>cLen);
 parcelHelpers.export(exports, "mLen", ()=>mLen);
 parcelHelpers.export(exports, "inRange", ()=>inRange);
 parcelHelpers.export(exports, "toString", ()=>toString);
-parcelHelpers.export(exports, "fromString", ()=>fromString);
 var _indexJs = require("./index.js");
 /**
  * @typedef {readonly [x: number, y: number] & {__opaque: 'StructVec2'}} Vec2
@@ -1450,12 +1449,8 @@ const cLen = (vecA, vecB = zero())=>Math.max(Math.abs(vecA[0] - vecB[0]), Math.a
 const mLen = (vecA, vecB = zero())=>Math.abs(vecA[0] - vecB[0]) + Math.abs(vecA[1] - vecB[1]);
 const inRange = (vec, min, max)=>vec[0] >= min[0] && vec[0] <= max[0] && vec[1] >= min[1] && vec[1] <= max[1];
 const toString = ([x, y])=>`${x},${y}`;
-const fromString = (str)=>{
-    const [x, y] = str.split(",").map(Number);
-    return vec(x, y);
-};
 
-},{"./index.js":"Zicik","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports,__globalThis) {
+},{"./index.js":"6dHdC","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports,__globalThis) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -1485,7 +1480,7 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"1RnTW":[function(require,module,exports,__globalThis) {
+},{}],"2gsaT":[function(require,module,exports,__globalThis) {
 // @ts-check
 /**
  * @typedef {[x: number, y: number, z: number]} Vec3
@@ -1592,7 +1587,7 @@ const scale = (vec, factor)=>[
     ];
 const magnitudeSquared = (vec)=>dot(vec, vec);
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hlPOX":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"cqQj6":[function(require,module,exports,__globalThis) {
 // @ts-check
 /**
  *
@@ -1633,7 +1628,7 @@ function* iterate(x, f) {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2eIv4":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"81eYO":[function(require,module,exports,__globalThis) {
 // @ts-check
 // https://stackoverflow.com/a/42919752
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -1745,7 +1740,7 @@ class PriorityQueue {
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hSzmA":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"1OoBE":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -1756,7 +1751,6 @@ parcelHelpers.defineInteropFlag(exports);
  * @property {number} distance
  * @property {T} value
  * @property {PathItem<T>} [parent]
- * @property {PathItem<T>[]} [predecessors]
  */ /**
  * @template T
  *
@@ -1846,60 +1840,38 @@ function* bfs(getNext, starts, valToHash) {
     }
 }
 function* dijkstra(getNext, getDistance, starts, valToHash) {
-    /** @type {Map<unknown, PathItem<T>>} */ const visited = new Map();
+    const visited = new Set();
     /** @type {PriorityQueue<PathItem<T>>} */ const queue = new (0, _priorityQueueJs.PriorityQueue)((a, b)=>a.distance - b.distance);
     for (const start of starts){
-        /** @type {PathItem<T>} */ const item = {
+        queue.push({
             distance: getDistance(start),
             value: start,
-            parent: null,
-            predecessors: []
-        };
-        queue.push(item);
-        if (valToHash) visited.set(valToHash(start), item);
+            parent: null
+        });
+        if (valToHash) visited.add(valToHash(start));
     }
     while(queue.length){
         const current = queue.pop();
         yield current;
-        for (const next of getNext(current.value, current)){
-            const newDistance = current.distance + getDistance(next);
-            if (valToHash) {
-                const hash = valToHash(next);
-                if (visited.has(hash)) {
-                    const item = visited.get(hash);
-                    if (newDistance < item.distance) {
-                        item.distance = newDistance;
-                        item.parent = current;
-                        queue.push(item);
-                        item.predecessors = [
-                            current
-                        ];
-                    } else if (newDistance === item.distance) item.predecessors.push(current);
-                } else {
-                    /** @type {PathItem<T>} */ const item = {
-                        distance: newDistance,
-                        value: next,
-                        parent: current,
-                        predecessors: [
-                            current
-                        ]
-                    };
-                    visited.set(hash, item);
-                    queue.push(item);
-                }
-            } else queue.push({
-                distance: newDistance,
-                value: next,
-                parent: current,
-                predecessors: [
-                    current
-                ]
-            });
-        }
+        for (const next of getNext(current.value, current))if (valToHash) {
+            const hash = valToHash(next);
+            if (!visited.has(hash)) {
+                visited.add(hash);
+                queue.push({
+                    distance: current.distance + getDistance(next),
+                    value: next,
+                    parent: current
+                });
+            }
+        } else queue.push({
+            distance: current.distance + getDistance(next),
+            value: next,
+            parent: current
+        });
     }
 }
 
-},{"./priority-queue.js":"2eIv4","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"70n2o":[function(require,module,exports,__globalThis) {
+},{"./priority-queue.js":"81eYO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"aX1eo":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -2131,7 +2103,270 @@ function transpose(xs) {
     return res;
 }
 
-},{"./index.js":"Zicik","./lib.js":"evqQV","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8wzUn":[function(require,module,exports,__globalThis) {
+},{"./index.js":"6dHdC","./lib.js":"bDK29","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5eBSb":[function(require,module,exports,__globalThis) {
+// @ts-check
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "t", ()=>t);
+var _indexJs = require("./index.js");
+/**
+ * @param {string} strVal
+ */ function tryGetSeparator(strVal) {
+    const separators = [
+        "\n\n",
+        "\n",
+        " -> ",
+        ", ",
+        ",",
+        " - ",
+        " ",
+        "-"
+    ];
+    for (const separator of separators){
+        if (strVal.includes(separator)) return separator;
+    }
+    return null;
+}
+/**
+ * @template T
+ *
+ * @typedef {Object} ParserRegistryItem
+ * @property {(input: string) => boolean} check
+ * @property {(input: string, key?: string) => T} parse
+ *
+ */ /**
+ * @template {ParserRegistryItem<unknown>} T
+ *
+ * @typedef {T & {withSeparator: (separator: string) => T}} WithSeparator
+ */ /**
+ * @template {Record<string, ParserRegistryItem<unknown>>} T
+ *
+ * @param {T} parsers
+ * @returns {T}
+ */ function registerParsers(parsers) {
+    return parsers;
+}
+const PARSERS = registerParsers({
+    int: /** @type {const} */ {
+        name: "int",
+        check: (key)=>key === "int",
+        parse: (strVal)=>parseInt(strVal, 10)
+    },
+    str: /** @type {const} */ {
+        name: "str",
+        check: (key)=>key === "str",
+        parse: (strVal)=>strVal
+    },
+    vec: /** @type {const} */ {
+        name: "vec",
+        check: (key)=>key === "vec",
+        parse: (strVal)=>{
+            const separator = tryGetSeparator(strVal);
+            if (!separator) throw new Error(`Invalid vec: ${strVal}`);
+            const [x, y] = strVal.split(separator).map(Number);
+            return (0, _indexJs.V).vec(x, y);
+        }
+    },
+    vec3: /** @type {const} */ {
+        name: "vec3",
+        check: (key)=>key === "vec3",
+        parse: (strVal)=>{
+            const separator = tryGetSeparator(strVal);
+            if (!separator) throw new Error(`Invalid vec3: ${strVal}`);
+            const [x, y, z] = strVal.split(separator).map(Number);
+            return (0, _indexJs.V3).vec3(x, y, z);
+        }
+    },
+    arr: /** @type {const} */ {
+        name: "arr",
+        check: (key)=>key.endsWith("[]"),
+        parse: (strVal, key = "")=>{
+            const type = key.slice(0, -2);
+            const parser = getParserByType(type);
+            if (!parser) throw new Error(`Invalid array type "${type}" in "${key}"`);
+            const separator = tryGetSeparator(strVal) ?? ",";
+            return strVal.split(separator).filter((x)=>x !== "").map((x)=>parser.parse(x.trim(), type));
+        }
+    },
+    tuple: /** @type {const} */ {
+        name: "tuple",
+        check: (key)=>key.startsWith("(") && key.endsWith(")"),
+        parse: (strVal, key = "")=>{
+            const types = key.slice(1, -1).split(",");
+            const separator = tryGetSeparator(strVal) ?? ",";
+            return strVal.split(separator).map((x, i)=>{
+                const parser = getParserByType(types[i]);
+                if (!parser) throw new Error(`Invalid tuple type "${types[i]}" in "${key}"`);
+                return parser.parse(x, types[i]);
+            });
+        }
+    }
+});
+/**
+ * @param {string} type
+ * @returns {ParserRegistryItem<unknown> | null}
+ */ function getParserByType(type) {
+    for(const key in PARSERS){
+        if (PARSERS[/** @type {keyof typeof PARSERS} */ key].check(type)) return PARSERS[/** @type {keyof typeof PARSERS} */ key];
+    }
+    return null;
+}
+/**
+ * @template T
+ *
+ * @param {string} strVal
+ * @param {string} type
+ * @returns {T}
+ */ function parse(strVal, type) {
+    const parser = getParserByType(type);
+    if (!parser) throw new Error(`Invalid type "${type}"`);
+    return /** @type {T} */ parser.parse(strVal, type);
+}
+/**
+ * @template T
+ *
+ * @typedef {Object} Parser
+ * @property {(strVal: string) => T} parse
+ */ const commonTypes = {
+    int: ()=>mappableParser(PARSERS.int),
+    str: ()=>mappableParser(PARSERS.str),
+    vec: ()=>mappableParser(PARSERS.vec),
+    vec3: ()=>mappableParser(PARSERS.vec3),
+    /**
+	 * @template T
+	 *
+	 * @param {Parser<T>} type
+	 * @param {string | RegExp} [separator]
+	 */ arr: (type, separator)=>mappableParser({
+            parse: (strVal)=>{
+                return strVal.split(separator ?? tryGetSeparator(strVal) ?? ",").map((x)=>x.trim()).filter((x)=>x !== "").map((x)=>type.parse(x));
+            }
+        }),
+    /**
+	 * @template {Parser<unknown>[]} T
+	 *
+	 * @param {import("ts-toolbelt").F.Narrow<T>} types
+	 * @param {string} [separator]
+	 */ tuple: (types, separator)=>mappableParser({
+            /**
+			 * @param {string} strVal
+			 * @returns {{[K in keyof T]: T[K] extends Parser<infer U> ? U : never}}
+			 */ parse: (strVal)=>{
+                // @ts-ignore
+                return strVal.split(separator ?? tryGetSeparator(strVal) ?? ",").map((x, i)=>types[i].parse(x));
+            }
+        }),
+    /**
+	 * @template {readonly string[]} T
+	 *
+	 * @param {T} values
+	 */ enum: (...values)=>mappableParser({
+            /**
+			 * @param {string} strVal
+			 * @returns {T[number]}
+			 */ parse: (strVal)=>{
+                // @ts-ignore
+                if (!values.includes(strVal)) throw new Error(`Invalid enum value "${strVal}"`);
+                return strVal;
+            }
+        })
+};
+/**
+ * @template T
+ * @param {Parser<T>} parser
+ */ function mappableParser(parser) {
+    return {
+        ...parser,
+        /**
+		 * @template U
+		 * @param {(val: T) => U} fn
+		 */ map: (fn)=>mappableParser({
+                ...parser,
+                parse: (x)=>fn(parser.parse(x))
+            })
+    };
+}
+/**
+ * @template {(string)[]} T
+ *
+ * @param {TemplateStringsArray} strings
+ * @param {T} keys
+ */ function tpl(strings, ...keys) {
+    /**
+	 * @param {string} input
+	 * @returns {{[P in T[number] as import("./types.js").TemplateKey<P>]: import("./types.js").TemplateValue<P> }}
+	 */ function parseInternal(input) {
+        /** @type {Record<string, any>} */ const model = {};
+        let lastIndex = 0;
+        for(let i = 0; i < keys.length; i++){
+            const start = strings[i].length + lastIndex;
+            const end = strings[i + 1] ? input.indexOf(strings[i + 1], start) : input.length;
+            const strVal = input.slice(start, end);
+            const [key, type] = keys[i].split("|");
+            model[key] = parse(strVal, type);
+            lastIndex = end;
+        }
+        return /** @type {any} */ model;
+    }
+    return mappableParser({
+        parse: parseInternal
+    });
+}
+/**
+ * @template {string} K
+ * @template T
+ *
+ * @param {K} name
+ * @param {Parser<T>} parser
+ * @returns {NamedParser<K, T>}
+ */ function named(name, parser) {
+    return {
+        ...parser,
+        name
+    };
+}
+/**
+ * @template {string} K
+ * @template T
+ *
+ * @typedef {object} NamedParser
+ *
+ * @property {(strVal: string) => T} parse
+ * @property {K} name
+ */ /**
+ * @template {NamedParser<any, any>[]} T
+ *
+ * @param {TemplateStringsArray} strings
+ * @param  {T} keys
+ */ function tpl2(strings, ...keys) {
+    /**
+	 * @param {string} input
+	 * @returns {{[P in T[number] as P['name']]: ReturnType<P['parse']> }}
+	 */ function parseInternal(input) {
+        /** @type {Record<string, any>} */ const model = {};
+        let lastIndex = 0;
+        for(let i = 0; i < keys.length; i++){
+            const start = strings[i].length + lastIndex;
+            const end = strings[i + 1] ? input.indexOf(strings[i + 1], start) : input.length;
+            const strVal = input.slice(start, end);
+            const namedParser = keys[i];
+            model[namedParser.name] = namedParser.parse(strVal);
+            lastIndex = end;
+        }
+        return /** @type {any} */ model;
+    }
+    return mappableParser({
+        parse: parseInternal
+    });
+}
+const t = {
+    ...commonTypes,
+    named,
+    tpl,
+    tpl2
+};
+
+},{"./index.js":"6dHdC","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"8wzUn":[function(require,module,exports,__globalThis) {
 // @ts-check
 /**
  * @param {CanvasRenderingContext2D} ctx
@@ -2151,6 +2386,6 @@ function scaleCanvasToPixelRatio(ctx, width, height, scale = 1) {
     return pixelRatio;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["9AZGF"], null, "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["2zNZI"], null, "parcelRequire94c2")
 
-//# sourceMappingURL=index.8d409192.js.map
+//# sourceMappingURL=index.9aa41eeb.js.map

@@ -735,7 +735,7 @@ vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
 ^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
 v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^`;
 
-},{"../../../js/modules/iterator-extensions.js":"8eMUF","../../../js/solutions/15.js":"5wz6H","../../../js/modules/index.js":"Zicik","../common.js":"8wzUn"}],"5wz6H":[function(require,module,exports,__globalThis) {
+},{"../../../js/modules/iterator-extensions.js":"dc4LW","../../../js/solutions/15.js":"bQwsE","../../../js/modules/index.js":"6dHdC","../common.js":"8wzUn"}],"bQwsE":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -756,7 +756,6 @@ parcelHelpers.export(exports, "parseInput", ()=>parseInput);
 /**
  * @param {InputType} input
  */ parcelHelpers.export(exports, "part2", ()=>part2);
-var _graphJs = require("../modules/graph.js");
 var _indexJs = require("../modules/index.js");
 var _libJs = require("../modules/lib.js");
 var _parserJs = require("../modules/parser.js");
@@ -788,7 +787,7 @@ const parseInput = (0, _parserJs.t).tuple([
     (0, _parserJs.t).str().map((l)=>l.replaceAll("\n", "")).map((l)=>l.split("").map((0, _indexJs.V).asArrow))
 ]).parse;
 const isBox = (/** @type {string} */ c)=>c === "O" || c === "[" || c === "]";
-const getBoxPositions = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ pos)=>(0, _indexJs.Array2d).get(map, pos) === "[" ? [
+const boxPositions = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ pos)=>(0, _indexJs.Array2d).get(map, pos) === "[" ? [
         pos,
         (0, _indexJs.V).add(pos, (0, _indexJs.V).DIR_TO_VEC.R)
     ] // []
@@ -800,7 +799,6 @@ const getBoxPositions = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ po
         pos
     ] // O
 ;
-const canMove = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ pos, /** @type {V.Vec2} */ dir)=>(0, _indexJs.Array2d).get(map, (0, _indexJs.V).add(pos, dir)) !== "#";
 /**
  * @param {string[][]} map
  * @param {V.Vec2} pos
@@ -810,14 +808,30 @@ const canMove = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ pos, /** @
     const targetPos = (0, _indexJs.V).add(pos, dir);
     if ((0, _indexJs.Array2d).get(map, targetPos) === "#") return pos;
     if ((0, _indexJs.Array2d).get(map, targetPos) === ".") return targetPos;
-    // targetPos is a box
-    const allBoxes = (0, _graphJs.dijkstra)((pos)=>getBoxPositions(map, (0, _indexJs.V).add(pos, dir)).filter((x)=>isBox((0, _indexJs.Array2d).get(map, x))), (pos)=>(0, _indexJs.V).mLen(pos, targetPos), getBoxPositions(map, targetPos), (0, _indexJs.V).toString).map((x)=>x.value).toArray().reverse();
-    if (allBoxes.some((box)=>!canMove(map, box, dir))) return pos;
-    for (const box of allBoxes){
-        (0, _indexJs.Array2d).set(map, (0, _indexJs.V).add(box, dir), (0, _indexJs.Array2d).get(map, box));
-        (0, _indexJs.Array2d).set(map, box, ".");
+    if (isBox((0, _indexJs.Array2d).get(map, targetPos))) {
+        const allBoxes = [];
+        let queue = boxPositions(map, targetPos);
+        const visited = new Set();
+        while(queue.length > 0){
+            const box = queue.pop();
+            if (visited.has((0, _indexJs.V).toString(box))) continue;
+            visited.add((0, _indexJs.V).toString(box));
+            allBoxes.push(box);
+            const next = (0, _indexJs.V).add(box, dir);
+            if (isBox((0, _indexJs.Array2d).get(map, next))) queue.push(...boxPositions(map, next));
+        }
+        const canMove = allBoxes.every((box)=>(0, _indexJs.Array2d).get(map, (0, _indexJs.V).add(box, dir)) !== "#");
+        if (!canMove) return pos;
+        // sort by moving direction
+        allBoxes.sort((a, b)=>(0, _indexJs.V).mLen(b, targetPos) - (0, _indexJs.V).mLen(a, targetPos));
+        for (const box of allBoxes){
+            const value = (0, _indexJs.Array2d).get(map, box);
+            (0, _indexJs.Array2d).set(map, box, ".");
+            (0, _indexJs.Array2d).set(map, (0, _indexJs.V).add(box, dir), value);
+        }
+        return targetPos;
     }
-    return targetPos;
+    throw new Error("Invalid move");
 }
 function* moves(map, arrows) {
     const start = (0, _indexJs.Array2d).traverse(map).find((p)=>p.value === "@").pos;
@@ -855,269 +869,6 @@ function part2(input) {
     return (0, _indexJs.Array2d).traverse(lst[1]).filter((p)=>p.value === "[").map((p)=>(0, _indexJs.V).y(p.pos) * 100 + (0, _indexJs.V).x(p.pos)).sum();
 }
 
-},{"../modules/graph.js":"hSzmA","../modules/index.js":"Zicik","../modules/lib.js":"evqQV","../modules/parser.js":"eJ4CG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"eJ4CG":[function(require,module,exports,__globalThis) {
-// @ts-check
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "t", ()=>t);
-var _indexJs = require("./index.js");
-/**
- * @param {string} strVal
- */ function tryGetSeparator(strVal) {
-    const separators = [
-        "\n\n",
-        "\n",
-        " -> ",
-        ", ",
-        ",",
-        " - ",
-        " ",
-        "-"
-    ];
-    for (const separator of separators){
-        if (strVal.includes(separator)) return separator;
-    }
-    return null;
-}
-/**
- * @template T
- *
- * @typedef {Object} ParserRegistryItem
- * @property {(input: string) => boolean} check
- * @property {(input: string, key?: string) => T} parse
- *
- */ /**
- * @template {ParserRegistryItem<unknown>} T
- *
- * @typedef {T & {withSeparator: (separator: string) => T}} WithSeparator
- */ /**
- * @template {Record<string, ParserRegistryItem<unknown>>} T
- *
- * @param {T} parsers
- * @returns {T}
- */ function registerParsers(parsers) {
-    return parsers;
-}
-const PARSERS = registerParsers({
-    int: /** @type {const} */ {
-        name: "int",
-        check: (key)=>key === "int",
-        parse: (strVal)=>parseInt(strVal, 10)
-    },
-    str: /** @type {const} */ {
-        name: "str",
-        check: (key)=>key === "str",
-        parse: (strVal)=>strVal
-    },
-    vec: /** @type {const} */ {
-        name: "vec",
-        check: (key)=>key === "vec",
-        parse: (strVal)=>{
-            const separator = tryGetSeparator(strVal);
-            if (!separator) throw new Error(`Invalid vec: ${strVal}`);
-            const [x, y] = strVal.split(separator).map(Number);
-            return (0, _indexJs.V).vec(x, y);
-        }
-    },
-    vec3: /** @type {const} */ {
-        name: "vec3",
-        check: (key)=>key === "vec3",
-        parse: (strVal)=>{
-            const separator = tryGetSeparator(strVal);
-            if (!separator) throw new Error(`Invalid vec3: ${strVal}`);
-            const [x, y, z] = strVal.split(separator).map(Number);
-            return (0, _indexJs.V3).vec3(x, y, z);
-        }
-    },
-    arr: /** @type {const} */ {
-        name: "arr",
-        check: (key)=>key.endsWith("[]"),
-        parse: (strVal, key = "")=>{
-            const type = key.slice(0, -2);
-            const parser = getParserByType(type);
-            if (!parser) throw new Error(`Invalid array type "${type}" in "${key}"`);
-            const separator = tryGetSeparator(strVal) ?? ",";
-            return strVal.split(separator).filter((x)=>x !== "").map((x)=>parser.parse(x.trim(), type));
-        }
-    },
-    tuple: /** @type {const} */ {
-        name: "tuple",
-        check: (key)=>key.startsWith("(") && key.endsWith(")"),
-        parse: (strVal, key = "")=>{
-            const types = key.slice(1, -1).split(",");
-            const separator = tryGetSeparator(strVal) ?? ",";
-            return strVal.split(separator).map((x, i)=>{
-                const parser = getParserByType(types[i]);
-                if (!parser) throw new Error(`Invalid tuple type "${types[i]}" in "${key}"`);
-                return parser.parse(x, types[i]);
-            });
-        }
-    }
-});
-/**
- * @param {string} type
- * @returns {ParserRegistryItem<unknown> | null}
- */ function getParserByType(type) {
-    for(const key in PARSERS){
-        if (PARSERS[/** @type {keyof typeof PARSERS} */ key].check(type)) return PARSERS[/** @type {keyof typeof PARSERS} */ key];
-    }
-    return null;
-}
-/**
- * @template T
- *
- * @param {string} strVal
- * @param {string} type
- * @returns {T}
- */ function parse(strVal, type) {
-    const parser = getParserByType(type);
-    if (!parser) throw new Error(`Invalid type "${type}"`);
-    return /** @type {T} */ parser.parse(strVal, type);
-}
-/**
- * @template T
- *
- * @typedef {Object} Parser
- * @property {(strVal: string) => T} parse
- */ const commonTypes = {
-    int: ()=>mappableParser(PARSERS.int),
-    str: ()=>mappableParser(PARSERS.str),
-    vec: ()=>mappableParser(PARSERS.vec),
-    vec3: ()=>mappableParser(PARSERS.vec3),
-    /**
-	 * @template T
-	 *
-	 * @param {Parser<T>} type
-	 * @param {string | RegExp} [separator]
-	 */ arr: (type, separator)=>mappableParser({
-            parse: (strVal)=>{
-                return strVal.split(separator ?? tryGetSeparator(strVal) ?? ",").map((x)=>x.trim()).filter((x)=>x !== "").map((x)=>type.parse(x));
-            }
-        }),
-    /**
-	 * @template {Parser<unknown>[]} T
-	 *
-	 * @param {import("ts-toolbelt").F.Narrow<T>} types
-	 * @param {string} [separator]
-	 */ tuple: (types, separator)=>mappableParser({
-            /**
-			 * @param {string} strVal
-			 * @returns {{[K in keyof T]: T[K] extends Parser<infer U> ? U : never}}
-			 */ parse: (strVal)=>{
-                // @ts-ignore
-                return strVal.split(separator ?? tryGetSeparator(strVal) ?? ",").map((x, i)=>types[i].parse(x));
-            }
-        }),
-    /**
-	 * @template {readonly string[]} T
-	 *
-	 * @param {T} values
-	 */ enum: (...values)=>mappableParser({
-            /**
-			 * @param {string} strVal
-			 * @returns {T[number]}
-			 */ parse: (strVal)=>{
-                // @ts-ignore
-                if (!values.includes(strVal)) throw new Error(`Invalid enum value "${strVal}"`);
-                return strVal;
-            }
-        })
-};
-/**
- * @template T
- * @param {Parser<T>} parser
- */ function mappableParser(parser) {
-    return {
-        ...parser,
-        /**
-		 * @template U
-		 * @param {(val: T) => U} fn
-		 */ map: (fn)=>mappableParser({
-                ...parser,
-                parse: (x)=>fn(parser.parse(x))
-            })
-    };
-}
-/**
- * @template {(string)[]} T
- *
- * @param {TemplateStringsArray} strings
- * @param {T} keys
- */ function tpl(strings, ...keys) {
-    /**
-	 * @param {string} input
-	 * @returns {{[P in T[number] as import("./types.js").TemplateKey<P>]: import("./types.js").TemplateValue<P> }}
-	 */ function parseInternal(input) {
-        /** @type {Record<string, any>} */ const model = {};
-        let lastIndex = 0;
-        for(let i = 0; i < keys.length; i++){
-            const start = strings[i].length + lastIndex;
-            const end = strings[i + 1] ? input.indexOf(strings[i + 1], start) : input.length;
-            const strVal = input.slice(start, end);
-            const [key, type] = keys[i].split("|");
-            model[key] = parse(strVal, type);
-            lastIndex = end;
-        }
-        return /** @type {any} */ model;
-    }
-    return mappableParser({
-        parse: parseInternal
-    });
-}
-/**
- * @template {string} K
- * @template T
- *
- * @param {K} name
- * @param {Parser<T>} parser
- * @returns {NamedParser<K, T>}
- */ function named(name, parser) {
-    return {
-        ...parser,
-        name
-    };
-}
-/**
- * @template {string} K
- * @template T
- *
- * @typedef {object} NamedParser
- *
- * @property {(strVal: string) => T} parse
- * @property {K} name
- */ /**
- * @template {NamedParser<any, any>[]} T
- *
- * @param {TemplateStringsArray} strings
- * @param  {T} keys
- */ function tpl2(strings, ...keys) {
-    /**
-	 * @param {string} input
-	 * @returns {{[P in T[number] as P['name']]: ReturnType<P['parse']> }}
-	 */ function parseInternal(input) {
-        /** @type {Record<string, any>} */ const model = {};
-        let lastIndex = 0;
-        for(let i = 0; i < keys.length; i++){
-            const start = strings[i].length + lastIndex;
-            const end = strings[i + 1] ? input.indexOf(strings[i + 1], start) : input.length;
-            const strVal = input.slice(start, end);
-            const namedParser = keys[i];
-            model[namedParser.name] = namedParser.parse(strVal);
-            lastIndex = end;
-        }
-        return /** @type {any} */ model;
-    }
-    return mappableParser({
-        parse: parseInternal
-    });
-}
-const t = {
-    ...commonTypes,
-    named,
-    tpl,
-    tpl2
-};
-
-},{"./index.js":"Zicik","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["lQ2LT","gdfmp"], "gdfmp", "parcelRequire94c2")
+},{"../modules/index.js":"6dHdC","../modules/lib.js":"bDK29","../modules/parser.js":"5eBSb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["lQ2LT","gdfmp"], "gdfmp", "parcelRequire94c2")
 
 //# sourceMappingURL=index.783677bc.js.map
