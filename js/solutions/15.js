@@ -74,9 +74,12 @@ function makeMove(map, pos, arrow) {
 
 	// targetPos is a box
 	const allBoxes = dijkstra(
-		(pos) => getBoxPositions(map, V.add(pos, dir)).filter((x) => isBox(Array2d.get(map, x))),
-		(pos) => V.mLen(pos, targetPos),
-		getBoxPositions(map, targetPos),
+		(pos) =>
+			[V.add(pos, dir)]
+				.filter((x) => isBox(Array2d.get(map, x)))
+				.flatMap((x) => getBoxPositions(map, x))
+				.map((x) => ({ value: x, distance: V.mLen(pos, x) })),
+		getBoxPositions(map, targetPos).map((x) => ({ value: x, distance: V.mLen(targetPos, x) })),
 		V.toString,
 	)
 		.map((x) => x.value)

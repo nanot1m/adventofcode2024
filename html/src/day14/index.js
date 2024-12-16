@@ -62,7 +62,7 @@ function draw(input, ctx) {
 		time = t
 
 		const newRobots = robots.map((robot) => ({
-			pos: calc(robot.pos, robot.vel, t, width, height),
+			pos: calc(robot.pos, robot.vel, t),
 			vel: robot.vel,
 		}))
 
@@ -82,7 +82,7 @@ function draw(input, ctx) {
 		for (let i = 0; i < 10; i++) {
 			time++
 			newRobots = robots.map((robot) => ({
-				pos: calc(robot.pos, robot.vel, time, width, height),
+				pos: calc(robot.pos, robot.vel, time),
 				vel: robot.vel,
 			}))
 			const timeStr = time.toString()

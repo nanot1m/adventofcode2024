@@ -457,3 +457,10 @@ export function isInRange(value, min, max) {
  * @returns {T}
  */
 export const identity = (x) => x
+
+export const asciiBlue = (/** @type {string} */ str) => `\x1b[34m${str}\x1b[0m`
+export const asciiGreen = (/** @type {string} */ str) => `\x1b[32m${str}\x1b[0m`
+export const asciiRed = (/** @type {string} */ str) => `\x1b[31m${str}\x1b[0m`
+export const asciiYellow = (/** @type {string} */ str) => `\x1b[33m${str}\x1b[0m`
+export const asciiMagenta = (/** @type {string} */ str) => `\x1b[35m${str}\x1b[0m`
+export const asciiCyan = (/** @type {string} */ str) => `\x1b[36m${str}\x1b[0m`

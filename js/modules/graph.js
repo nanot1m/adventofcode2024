@@ -9,6 +9,7 @@ import { PriorityQueue } from "./priority-queue.js"
  * @property {number} distance
  * @property {T} value
  * @property {PathItem<T>} [parent]
+ * @property {PathItem<T>[]} [predecessors]
  */
 
 /**
@@ -88,21 +89,23 @@ export function* bfs(getNext, starts, valToHash) {
 /**
  * @template T
  *
- * @param {(value: T, step: PathItem<T>) => Iterable<T>} getNext
- * @param {(value: T) => number} getDistance
- * @param {T[]} starts
+ * @param {(value: T, step: PathItem<T>) => Iterable<{value: T, distance: number}>} getNext
+ * @param {{value: T, distance: number}[]} starts
  * @param {(value: T) => unknown} [valToHash]
  */
-export function* dijkstra(getNext, getDistance, starts, valToHash) {
-	const visited = new Set()
+export function* dijkstra(getNext, starts, valToHash) {
+	/** @type {Map<unknown, PathItem<T>>} */
+	const visited = new Map()
 
 	/** @type {PriorityQueue<PathItem<T>>} */
 	const queue = new PriorityQueue((a, b) => a.distance - b.distance)
 
-	for (const start of starts) {
-		queue.push({ distance: getDistance(start), value: start, parent: null })
+	for (const { value, distance } of starts) {
+		/** @type {PathItem<T>} */
+		const item = { distance, value, parent: null, predecessors: [] }
+		queue.push(item)
 		if (valToHash) {
-			visited.add(valToHash(start))
+			visited.set(valToHash(value), item)
 		}
 	}
 
@@ -110,22 +113,37 @@ export function* dijkstra(getNext, getDistance, starts, valToHash) {
 		const current = queue.pop()
 		yield current
 
-		for (const next of getNext(current.value, current)) {
+		for (const { value, distance: d } of getNext(current.value, current)) {
+			const distance = current.distance + d
 			if (valToHash) {
-				const hash = valToHash(next)
-				if (!visited.has(hash)) {
-					visited.add(hash)
-					queue.push({
-						distance: current.distance + getDistance(next),
-						value: next,
+				const hash = valToHash(value)
+				if (visited.has(hash)) {
+					const item = visited.get(hash)
+					if (distance < item.distance) {
+						item.distance = distance
+						item.parent = current
+						queue.push(item)
+						item.predecessors = [current]
+					} else if (distance === item.distance) {
+						item.predecessors.push(current)
+					}
+				} else {
+					/** @type {PathItem<T>} */
+					const item = {
+						distance: distance,
+						value: value,
 						parent: current,
-					})
+						predecessors: [current],
+					}
+					visited.set(hash, item)
+					queue.push(item)
 				}
 			} else {
 				queue.push({
-					distance: current.distance + getDistance(next),
-					value: next,
+					distance: distance,
+					value: value,
 					parent: current,
+					predecessors: [current],
 				})
 			}
 		}

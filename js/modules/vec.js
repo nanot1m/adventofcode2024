@@ -257,3 +257,12 @@ export const inRange = (vec, min, max) =>
  * @param {Vec2} vec
  */
 export const toString = ([x, y]) => `${x},${y}`
+
+/**
+ * @param {string} str
+ * @returns {Vec2}
+ */
+export const fromString = (str) => {
+	const [x, y] = str.split(",").map(Number)
+	return vec(x, y)
+}
