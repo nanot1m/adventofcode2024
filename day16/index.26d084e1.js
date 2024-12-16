@@ -142,14 +142,14 @@
       this[globalName] = mainExports;
     }
   }
-})({"lQ2LT":[function(require,module,exports,__globalThis) {
+})({"9LZNA":[function(require,module,exports,__globalThis) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "d6ea1d42532a7575";
 var HMR_USE_SSE = false;
-module.bundle.HMR_BUNDLE_ID = "83aa5a85783677bc";
+module.bundle.HMR_BUNDLE_ID = "729b32ef26d084e1";
 "use strict";
 /* global HMR_HOST, HMR_PORT, HMR_ENV_HASH, HMR_SECURE, HMR_USE_SSE, chrome, browser, __parcel__import__, __parcel__importScripts__, ServiceWorkerGlobalScope */ /*::
 import type {
@@ -595,10 +595,10 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
     }
 }
 
-},{}],"gdfmp":[function(require,module,exports,__globalThis) {
+},{}],"jbdHw":[function(require,module,exports,__globalThis) {
 // @ts-check
 var _iteratorExtensionsJs = require("../../../js/modules/iterator-extensions.js");
-var _15Js = require("../../../js/solutions/15.js");
+var _16Js = require("../../../js/solutions/16.js");
 var _indexJs = require("../../../js/modules/index.js");
 var _commonJs = require("../common.js");
 const canvas = document.getElementById("canvas");
@@ -613,129 +613,207 @@ const colors = {
     green: "#91cfa1",
     red: "#ea859a",
     yellow: "#fef59d",
-    text: '#fee15b'
+    black: "black",
+    white: "white"
 };
 let raf = 0;
 let unsubscribe = ()=>{};
+const popupNode = document.createElement("div");
+popupNode.style.position = "fixed";
+popupNode.style.zIndex = "1000";
+popupNode.style.pointerEvents = "none";
+popupNode.style.padding = "5px";
+popupNode.style.border = "1px solid black";
+popupNode.style.borderRadius = "5px";
+popupNode.style.backgroundColor = "white";
+popupNode.style.color = "black";
+popupNode.style.display = "none";
+popupNode.style.fontFamily = "monospace";
+popupNode.style.fontSize = "12px";
+document.body.appendChild(popupNode);
 /**
  * @param {string} input
  * @param {CanvasRenderingContext2D} ctx
  * @param {boolean} part2
- */ function draw(input, ctx, part2) {
+ */ function draw(input, ctx, part2, cWidth = INIT_WIDTH) {
     cancelAnimationFrame(raf);
     unsubscribe();
-    let [map, arrows] = (0, _15Js.parseInput)(input);
-    let width = window.innerWidth / 2 - 32;
-    let height = width;
-    if (part2) {
-        map = (0, _15Js.widenMap)(map);
-        width *= 2;
-    }
-    const mapWidth = map[0].length;
-    const scale = width / mapWidth;
-    (0, _commonJs.scaleCanvasToPixelRatio)(ctx, width, height);
+    let map = (0, _16Js.parseInput)(input);
+    let width = map[0].length;
+    let height = map.length;
+    const scale = Math.max(cWidth / width, 10);
+    (0, _commonJs.scaleCanvasToPixelRatio)(ctx, width * scale, height * scale);
     ctx.canvas.scrollIntoView({
         behavior: "smooth"
     });
-    const drawMap = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ robot)=>{
-        ctx.clearRect(0, 0, width, height);
+    const drawText = (x, y, text, color = colors.white)=>{
         ctx.font = `${scale}px monospace`;
-        map.forEach((row, y)=>{
-            row.forEach((cell, x)=>{
-                ctx.fillStyle = 'white';
-                ctx.fillRect(x * scale, y * scale, scale, scale);
-                const padding = scale * 0.05;
-                // draw floor tile
-                ctx.fillStyle = colors.yellow;
-                ctx.fillRect(x * scale + padding, y * scale + padding, scale - padding * 2, scale - padding * 2);
-                ctx.font = `${scale}px monospace`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "top";
-                if ((0, _indexJs.V).eq((0, _indexJs.V).vec(x, y), robot)) {
-                    // draw robot emoji
-                    ctx.fillStyle = colors.text;
-                    ctx.fillText("\uD83E\uDD16", x * scale + scale / 2, y * scale);
-                }
-                if (cell === "#") {
-                    // draw wall
-                    ctx.fillStyle = colors.red;
-                    ctx.fillRect(x * scale + padding, y * scale + padding, scale - padding * 2, scale - padding * 2);
-                    ctx.fillStyle = colors.text;
-                    ctx.fillText(cell, x * scale + scale / 2, y * scale + padding * 2);
-                }
-                if (cell === "O") {
-                    // draw box on the floor
-                    ctx.fillStyle = colors.green;
-                    ctx.fillRect(x * scale + padding, y * scale + padding, scale - padding * 2, scale - padding * 2);
-                    ctx.fillStyle = colors.text;
-                    ctx.fillText(cell, x * scale + scale / 2, y * scale + padding * 2);
-                }
-                if (cell === "[") {
-                    // draw box on the floor
-                    ctx.fillStyle = colors.green;
-                    ctx.fillRect(x * scale + padding, y * scale + padding, scale - padding, scale - padding * 2);
-                    ctx.fillStyle = colors.text;
-                    ctx.fillText(cell, x * scale + scale / 2, y * scale + padding * 2);
-                }
-                if (cell === "]") {
-                    // draw box on the floor
-                    ctx.fillStyle = colors.green;
-                    ctx.fillRect(x * scale, y * scale + padding, scale - padding, scale - padding * 2);
-                    ctx.fillStyle = colors.text;
-                    ctx.fillText(cell, x * scale + scale / 2, y * scale + padding * 2);
-                }
-            });
-        });
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = color;
+        ctx.fillText(text, x * scale + scale / 2, y * scale + scale / 2 + scale / 10);
     };
-    const iter = (0, _15Js.moves)(map, arrows);
-    let lastDt = 0;
-    raf = requestAnimationFrame(function render(dt) {
-        if (dt - lastDt > 30) {
-            lastDt = dt;
-            const { value, done } = iter.next();
-            if (done) {
-                unsubscribe();
-                return;
+    let hoveredX = -1;
+    let hoveredY = -1;
+    const drawPopup = (x, y, text)=>{
+        popupNode.textContent = text;
+        popupNode.style.left = `${x}px`;
+        popupNode.style.top = `${y - 30}px`;
+        popupNode.style.display = "block";
+    };
+    const hidePopup = ()=>{
+        popupNode.style.display = "none";
+    };
+    const { visited, end, start } = (0, _16Js.findPathWithPredecessors)(map);
+    const sortedPath = Array.from(visited).sort((a, b)=>a.distance - b.distance);
+    const drawMap = ()=>{
+        unsubscribe();
+        const mapData = (0, _indexJs.Array2d).map(map, (x, pos)=>{
+            if (x === "#") return {
+                type: "wall",
+                distance: 0,
+                dir: 0
+            };
+            if ((0, _indexJs.V).eq(pos, start)) return {
+                type: "start",
+                distance: 0,
+                dir: 1
+            };
+            if ((0, _indexJs.V).eq(pos, end)) return {
+                type: "end",
+                distance: 0,
+                dir: 0
+            };
+            return {
+                type: "empty",
+                distance: 0,
+                dir: 0
+            };
+        });
+        for (const x of sortedPath){
+            if ((0, _indexJs.V).eq(x.value.pos, start)) continue;
+            if ((0, _indexJs.V).eq(x.value.pos, end)) {
+                (0, _indexJs.Array2d).set(mapData, x.value.pos, {
+                    type: "end",
+                    distance: x.distance,
+                    dir: x.value.dir
+                });
+                continue;
             }
-            const [robot, map] = value;
-            drawMap(map, robot);
+            (0, _indexJs.Array2d).set(mapData, x.value.pos, {
+                type: "visited",
+                distance: x.distance,
+                dir: x.value.dir
+            });
         }
-        raf = requestAnimationFrame(render);
-    });
+        function render() {
+            ctx.fillStyle = colors.black;
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            for (const p of (0, _indexJs.Array2d).traverse(mapData)){
+                const { type } = p.value;
+                const [x, y] = p.pos;
+                let isHovered = x === hoveredX && y === hoveredY;
+                let textColor = isHovered ? colors.black : colors.white;
+                if (x === hoveredX && y === hoveredY) {
+                    ctx.fillStyle = colors.yellow;
+                    ctx.fillRect(x * scale, y * scale, scale, scale);
+                }
+                switch(type){
+                    case "wall":
+                        drawText(x, y, "#", isHovered ? textColor : colors.green);
+                        break;
+                    case "start":
+                        drawText(x, y, "S", textColor);
+                        break;
+                    case "end":
+                        drawText(x, y, "E", textColor);
+                        break;
+                    case "empty":
+                        drawText(x, y, ".", textColor);
+                        break;
+                    case "visited":
+                        const ch = [
+                            "^",
+                            ">",
+                            "v",
+                            "<"
+                        ][p.value.dir];
+                        drawText(x, y, ch, isHovered ? textColor : colors.red);
+                        break;
+                }
+            }
+        }
+        render();
+        function handleMouseOver(e) {
+            const x = Math.floor(e.offsetX / scale);
+            const y = Math.floor(e.offsetY / scale);
+            hoveredX = x;
+            hoveredY = y;
+            const pos = (0, _indexJs.V).vec(x, y);
+            const data = (0, _indexJs.Array2d).get(mapData, pos);
+            if (data && [
+                "visited",
+                "start",
+                "end"
+            ].includes(data.type)) {
+                render();
+                drawPopup(e.clientX, e.clientY, `${data.type} ${data.distance}`);
+            } else {
+                render();
+                hidePopup();
+            }
+        }
+        if (canvas) {
+            canvas.addEventListener("mousemove", handleMouseOver);
+            unsubscribe = ()=>canvas.removeEventListener("mousemove", handleMouseOver);
+        }
+    };
+    drawMap();
 }
 const inputForm = document.getElementById("input-form");
 if (!(inputForm instanceof HTMLFormElement)) throw new Error("no form");
+let lastInput = "";
 inputForm.addEventListener("submit", function(e) {
     e.preventDefault();
     const formData = new FormData(this);
     const input = formData.get("input")?.toString() ?? "";
-    draw(input.trim(), ctx, formData.get("part2")?.toString() === "on");
+    lastInput = input;
+    draw(input.trim(), ctx, formData.get("part2")?.toString() === "on", parseInt(ctx.canvas.style.width, 10));
+});
+const resizeHandle = document.getElementById("resize-handle");
+if (!(resizeHandle instanceof HTMLDivElement)) throw new Error("no resize handle");
+resizeHandle.addEventListener("mousedown", function(e) {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = parseInt(ctx.canvas.style.width, 10);
+    const onMouseMove = (e)=>{
+        const dx = e.clientX - startX;
+        const newWidth = Math.max(100, startWidth + dx);
+        draw(lastInput, ctx, false, newWidth);
+    };
+    const onMouseUp = ()=>{
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+    };
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
 });
 // @ts-ignore
 inputForm.querySelector("#input").textContent = `\
-##########
-#..O..O.O#
-#......O.#
-#.OO..O.O#
-#..O@..O.#
-#O#..O...#
-#O..O..O.#
-#.OO.O.OO#
-#....O...#
-##########
+###########
+##...######
+##.#.######
+##.#.....E#
+##.#####.##
+#S...###.##
+####.###.##
+####.###.##
+####.###.##
+####.###.##
+####.....##
+###########`;
 
-<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
-vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
-><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
-<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
-^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
-^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
->^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
-<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
-^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
-v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^`;
-
-},{"../../../js/modules/iterator-extensions.js":"dc4LW","../../../js/solutions/15.js":"bQwsE","../../../js/modules/index.js":"6dHdC","../common.js":"8wzUn"}],"bQwsE":[function(require,module,exports,__globalThis) {
+},{"../../../js/modules/iterator-extensions.js":"dc4LW","../../../js/solutions/16.js":"1oLZk","../../../js/modules/index.js":"6dHdC","../common.js":"8wzUn"}],"1oLZk":[function(require,module,exports,__globalThis) {
 // @ts-check
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -743,389 +821,108 @@ parcelHelpers.export(exports, "useExample", ()=>useExample);
 parcelHelpers.export(exports, "exampleInput", ()=>exampleInput);
 parcelHelpers.export(exports, "parseInput", ()=>parseInput);
 /**
- *
- * @param {string[][]} map
- * @param {V.Arrow[]} arrows
- */ parcelHelpers.export(exports, "moves", ()=>moves);
-/**
  * @param {InputType} input
  */ parcelHelpers.export(exports, "part1", ()=>part1);
 /**
- * @param {string[][]} map
- */ parcelHelpers.export(exports, "widenMap", ()=>widenMap);
+ * @param {InputType} input
+ */ parcelHelpers.export(exports, "findPathWithPredecessors", ()=>findPathWithPredecessors);
 /**
  * @param {InputType} input
  */ parcelHelpers.export(exports, "part2", ()=>part2);
 var _graphJs = require("../modules/graph.js");
 var _indexJs = require("../modules/index.js");
-var _libJs = require("../modules/lib.js");
-var _parserJs = require("../modules/parser.js");
 const useExample = false;
 const exampleInput = `\
-##########
-#..O..O.O#
-#......O.#
-#.OO..O.O#
-#..O@..O.#
-#O#..O...#
-#O..O..O.#
-#.OO.O.OO#
-#....O...#
-##########
-
-<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
-vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
-><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
-<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
-^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
-^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
->^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
-<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
-^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
-v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^`;
-const parseInput = (0, _parserJs.t).tuple([
-    (0, _indexJs.Array2d),
-    (0, _parserJs.t).str().map((l)=>l.replaceAll("\n", "")).map((l)=>l.split("").map((0, _indexJs.V).asArrow))
-]).parse;
-const isBox = (/** @type {string} */ c)=>c === "O" || c === "[" || c === "]";
-const getBoxPositions = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ pos)=>(0, _indexJs.Array2d).get(map, pos) === "[" ? [
-        pos,
-        (0, _indexJs.V).add(pos, (0, _indexJs.V).DIR_TO_VEC.R)
-    ] // []
-     : (0, _indexJs.Array2d).get(map, pos) === "]" ? [
-        (0, _indexJs.V).add(pos, (0, _indexJs.V).DIR_TO_VEC.L),
-        pos
-    ] // []
-     : [
-        pos
-    ] // O
-;
-const canMove = (/** @type {string[][]} */ map, /** @type {V.Vec2} */ pos, /** @type {V.Vec2} */ dir)=>(0, _indexJs.Array2d).get(map, (0, _indexJs.V).add(pos, dir)) !== "#";
+#################
+#...#...#...#..E#
+#.#.#.#.#.#.#.#.#
+#.#.#.#...#...#.#
+#.#.#.#.###.#.#.#
+#...#.#.#.....#.#
+#.#.#.#.#.#####.#
+#.#...#.#.#.....#
+#.#.#####.#.###.#
+#.#.#.......#...#
+#.#.###.#####.###
+#.#.#...#.....#.#
+#.#.#.#####.###.#
+#.#.#.........#.#
+#.#.#.#########.#
+#S#.............#
+#################`;
+const parseInput = (0, _indexJs.Array2d).parse;
 /**
- * @param {string[][]} map
- * @param {V.Vec2} pos
- * @param {V.Arrow} arrow
- */ function makeMove(map, pos, arrow) {
-    const dir = (0, _indexJs.V).fromArrow(arrow);
-    const targetPos = (0, _indexJs.V).add(pos, dir);
-    if ((0, _indexJs.Array2d).get(map, targetPos) === "#") return pos;
-    if ((0, _indexJs.Array2d).get(map, targetPos) === ".") return targetPos;
-    // targetPos is a box
-    const allBoxes = (0, _graphJs.dijkstra)((pos)=>[
-            (0, _indexJs.V).add(pos, dir)
-        ].filter((x)=>isBox((0, _indexJs.Array2d).get(map, x))).flatMap((x)=>getBoxPositions(map, x)).map((x)=>({
-                value: x,
-                distance: (0, _indexJs.V).mLen(pos, x)
-            })), getBoxPositions(map, targetPos).map((x)=>({
-            value: x,
-            distance: (0, _indexJs.V).mLen(targetPos, x)
-        })), (0, _indexJs.V).toString).map((x)=>x.value).toArray().reverse();
-    if (allBoxes.some((box)=>!canMove(map, box, dir))) return pos;
-    for (const box of allBoxes){
-        (0, _indexJs.Array2d).set(map, (0, _indexJs.V).add(box, dir), (0, _indexJs.Array2d).get(map, box));
-        (0, _indexJs.Array2d).set(map, box, ".");
-    }
-    return targetPos;
-}
-function* moves(map, arrows) {
-    const start = (0, _indexJs.Array2d).traverse(map).find((p)=>p.value === "@").pos;
-    (0, _indexJs.Array2d).set(map, start, ".");
-    let cur = start;
-    yield (0, _libJs.tuple)(cur, map, "start");
-    for (const arrow of arrows){
-        cur = makeMove(map, cur, arrow);
-        yield (0, _libJs.tuple)(cur, map, arrow);
-    }
+ * @param {string[][]} input
+ * @param {V.Vec2} start
+ * @param {V.Vec2} end
+ */ function findOptimalRoute(input, start, end) {
+    /** @param {{ pos: V.Vec2; dir: number; }} x */ const next = (x)=>[
+            {
+                value: {
+                    pos: (0, _indexJs.V).add(x.pos, (0, _indexJs.V).DIRS_4[x.dir]),
+                    dir: x.dir
+                },
+                distance: 1
+            },
+            {
+                value: {
+                    pos: x.pos,
+                    dir: (0, _indexJs.Lib).mod(x.dir + 1, 4)
+                },
+                distance: 1000
+            },
+            {
+                value: {
+                    pos: x.pos,
+                    dir: (0, _indexJs.Lib).mod(x.dir - 1, 4)
+                },
+                distance: 1000
+            }
+        ].filter(({ value })=>(0, _indexJs.Array2d).get(input, value.pos) !== "#");
+    /** @param {{ pos: V.Vec2; dir: number; }} x */ const toHash = (x)=>`${x.pos[0]},${x.pos[1]},${x.dir}`;
+    const init = [
+        {
+            value: {
+                pos: start,
+                dir: 1
+            },
+            distance: 0
+        }
+    ];
+    return (0, _graphJs.dijkstra)(next, init, toHash).find((v)=>(0, _indexJs.V).eq(v.value.pos, end));
 }
 function part1(input) {
-    const [map, arrows] = input;
-    const lst = moves(map, arrows).last();
-    return (0, _indexJs.Array2d).traverse(lst[1]).filter((p)=>p.value === "O").map((p)=>(0, _indexJs.V).y(p.pos) * 100 + (0, _indexJs.V).x(p.pos)).sum();
+    const start = (0, _indexJs.Array2d).traverse(input).find((v)=>v.value === "S").pos;
+    const end = (0, _indexJs.Array2d).traverse(input).find((v)=>v.value === "E").pos;
+    return findOptimalRoute(input, start, end).distance;
 }
-function widenMap(map) {
-    return map.map((row)=>row.flatMap((cell)=>{
-            return cell === "#" ? [
-                "#",
-                "#"
-            ] : cell === "O" ? [
-                "[",
-                "]"
-            ] : [
-                cell,
-                "."
-            ];
-        }));
+/**
+ * @typedef {import("../modules/graph.js").PathItem<T>} PathItem
+ * @template T
+ */ /**
+ * @param {PathItem<{pos: V.Vec2, dir: number}>} item
+ * @param {Set<PathItem<{pos: V.Vec2, dir: number}>>} result
+ */ const getPredecessorsSet = (item, result = new Set())=>{
+    result.add(item);
+    for (const v of item.predecessors)getPredecessorsSet(v, result);
+    return result;
+};
+function findPathWithPredecessors(input) {
+    const start = (0, _indexJs.Array2d).traverse(input).find((v)=>v.value === "S").pos;
+    const end = (0, _indexJs.Array2d).traverse(input).find((v)=>v.value === "E").pos;
+    const result = findOptimalRoute(input, start, end);
+    const visited = getPredecessorsSet(result);
+    return {
+        visited,
+        start,
+        end
+    };
 }
 function part2(input) {
-    const [map, arrows] = input;
-    const wideMap = widenMap(map);
-    const lst = moves(wideMap, arrows).last();
-    return (0, _indexJs.Array2d).traverse(lst[1]).filter((p)=>p.value === "[").map((p)=>(0, _indexJs.V).y(p.pos) * 100 + (0, _indexJs.V).x(p.pos)).sum();
+    const { visited } = findPathWithPredecessors(input);
+    return visited.values().distinct((x)=>(0, _indexJs.V).toString(x.value.pos)).count();
 }
 
-},{"../modules/graph.js":"1OoBE","../modules/index.js":"6dHdC","../modules/lib.js":"bDK29","../modules/parser.js":"5eBSb","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"5eBSb":[function(require,module,exports,__globalThis) {
-// @ts-check
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "t", ()=>t);
-var _indexJs = require("./index.js");
-/**
- * @param {string} strVal
- */ function tryGetSeparator(strVal) {
-    const separators = [
-        "\n\n",
-        "\n",
-        " -> ",
-        ", ",
-        ",",
-        " - ",
-        " ",
-        "-"
-    ];
-    for (const separator of separators){
-        if (strVal.includes(separator)) return separator;
-    }
-    return null;
-}
-/**
- * @template T
- *
- * @typedef {Object} ParserRegistryItem
- * @property {(input: string) => boolean} check
- * @property {(input: string, key?: string) => T} parse
- *
- */ /**
- * @template {ParserRegistryItem<unknown>} T
- *
- * @typedef {T & {withSeparator: (separator: string) => T}} WithSeparator
- */ /**
- * @template {Record<string, ParserRegistryItem<unknown>>} T
- *
- * @param {T} parsers
- * @returns {T}
- */ function registerParsers(parsers) {
-    return parsers;
-}
-const PARSERS = registerParsers({
-    int: /** @type {const} */ {
-        name: "int",
-        check: (key)=>key === "int",
-        parse: (strVal)=>parseInt(strVal, 10)
-    },
-    str: /** @type {const} */ {
-        name: "str",
-        check: (key)=>key === "str",
-        parse: (strVal)=>strVal
-    },
-    vec: /** @type {const} */ {
-        name: "vec",
-        check: (key)=>key === "vec",
-        parse: (strVal)=>{
-            const separator = tryGetSeparator(strVal);
-            if (!separator) throw new Error(`Invalid vec: ${strVal}`);
-            const [x, y] = strVal.split(separator).map(Number);
-            return (0, _indexJs.V).vec(x, y);
-        }
-    },
-    vec3: /** @type {const} */ {
-        name: "vec3",
-        check: (key)=>key === "vec3",
-        parse: (strVal)=>{
-            const separator = tryGetSeparator(strVal);
-            if (!separator) throw new Error(`Invalid vec3: ${strVal}`);
-            const [x, y, z] = strVal.split(separator).map(Number);
-            return (0, _indexJs.V3).vec3(x, y, z);
-        }
-    },
-    arr: /** @type {const} */ {
-        name: "arr",
-        check: (key)=>key.endsWith("[]"),
-        parse: (strVal, key = "")=>{
-            const type = key.slice(0, -2);
-            const parser = getParserByType(type);
-            if (!parser) throw new Error(`Invalid array type "${type}" in "${key}"`);
-            const separator = tryGetSeparator(strVal) ?? ",";
-            return strVal.split(separator).filter((x)=>x !== "").map((x)=>parser.parse(x.trim(), type));
-        }
-    },
-    tuple: /** @type {const} */ {
-        name: "tuple",
-        check: (key)=>key.startsWith("(") && key.endsWith(")"),
-        parse: (strVal, key = "")=>{
-            const types = key.slice(1, -1).split(",");
-            const separator = tryGetSeparator(strVal) ?? ",";
-            return strVal.split(separator).map((x, i)=>{
-                const parser = getParserByType(types[i]);
-                if (!parser) throw new Error(`Invalid tuple type "${types[i]}" in "${key}"`);
-                return parser.parse(x, types[i]);
-            });
-        }
-    }
-});
-/**
- * @param {string} type
- * @returns {ParserRegistryItem<unknown> | null}
- */ function getParserByType(type) {
-    for(const key in PARSERS){
-        if (PARSERS[/** @type {keyof typeof PARSERS} */ key].check(type)) return PARSERS[/** @type {keyof typeof PARSERS} */ key];
-    }
-    return null;
-}
-/**
- * @template T
- *
- * @param {string} strVal
- * @param {string} type
- * @returns {T}
- */ function parse(strVal, type) {
-    const parser = getParserByType(type);
-    if (!parser) throw new Error(`Invalid type "${type}"`);
-    return /** @type {T} */ parser.parse(strVal, type);
-}
-/**
- * @template T
- *
- * @typedef {Object} Parser
- * @property {(strVal: string) => T} parse
- */ const commonTypes = {
-    int: ()=>mappableParser(PARSERS.int),
-    str: ()=>mappableParser(PARSERS.str),
-    vec: ()=>mappableParser(PARSERS.vec),
-    vec3: ()=>mappableParser(PARSERS.vec3),
-    /**
-	 * @template T
-	 *
-	 * @param {Parser<T>} type
-	 * @param {string | RegExp} [separator]
-	 */ arr: (type, separator)=>mappableParser({
-            parse: (strVal)=>{
-                return strVal.split(separator ?? tryGetSeparator(strVal) ?? ",").map((x)=>x.trim()).filter((x)=>x !== "").map((x)=>type.parse(x));
-            }
-        }),
-    /**
-	 * @template {Parser<unknown>[]} T
-	 *
-	 * @param {import("ts-toolbelt").F.Narrow<T>} types
-	 * @param {string} [separator]
-	 */ tuple: (types, separator)=>mappableParser({
-            /**
-			 * @param {string} strVal
-			 * @returns {{[K in keyof T]: T[K] extends Parser<infer U> ? U : never}}
-			 */ parse: (strVal)=>{
-                // @ts-ignore
-                return strVal.split(separator ?? tryGetSeparator(strVal) ?? ",").map((x, i)=>types[i].parse(x));
-            }
-        }),
-    /**
-	 * @template {readonly string[]} T
-	 *
-	 * @param {T} values
-	 */ enum: (...values)=>mappableParser({
-            /**
-			 * @param {string} strVal
-			 * @returns {T[number]}
-			 */ parse: (strVal)=>{
-                // @ts-ignore
-                if (!values.includes(strVal)) throw new Error(`Invalid enum value "${strVal}"`);
-                return strVal;
-            }
-        })
-};
-/**
- * @template T
- * @param {Parser<T>} parser
- */ function mappableParser(parser) {
-    return {
-        ...parser,
-        /**
-		 * @template U
-		 * @param {(val: T) => U} fn
-		 */ map: (fn)=>mappableParser({
-                ...parser,
-                parse: (x)=>fn(parser.parse(x))
-            })
-    };
-}
-/**
- * @template {(string)[]} T
- *
- * @param {TemplateStringsArray} strings
- * @param {T} keys
- */ function tpl(strings, ...keys) {
-    /**
-	 * @param {string} input
-	 * @returns {{[P in T[number] as import("./types.js").TemplateKey<P>]: import("./types.js").TemplateValue<P> }}
-	 */ function parseInternal(input) {
-        /** @type {Record<string, any>} */ const model = {};
-        let lastIndex = 0;
-        for(let i = 0; i < keys.length; i++){
-            const start = strings[i].length + lastIndex;
-            const end = strings[i + 1] ? input.indexOf(strings[i + 1], start) : input.length;
-            const strVal = input.slice(start, end);
-            const [key, type] = keys[i].split("|");
-            model[key] = parse(strVal, type);
-            lastIndex = end;
-        }
-        return /** @type {any} */ model;
-    }
-    return mappableParser({
-        parse: parseInternal
-    });
-}
-/**
- * @template {string} K
- * @template T
- *
- * @param {K} name
- * @param {Parser<T>} parser
- * @returns {NamedParser<K, T>}
- */ function named(name, parser) {
-    return {
-        ...parser,
-        name
-    };
-}
-/**
- * @template {string} K
- * @template T
- *
- * @typedef {object} NamedParser
- *
- * @property {(strVal: string) => T} parse
- * @property {K} name
- */ /**
- * @template {NamedParser<any, any>[]} T
- *
- * @param {TemplateStringsArray} strings
- * @param  {T} keys
- */ function tpl2(strings, ...keys) {
-    /**
-	 * @param {string} input
-	 * @returns {{[P in T[number] as P['name']]: ReturnType<P['parse']> }}
-	 */ function parseInternal(input) {
-        /** @type {Record<string, any>} */ const model = {};
-        let lastIndex = 0;
-        for(let i = 0; i < keys.length; i++){
-            const start = strings[i].length + lastIndex;
-            const end = strings[i + 1] ? input.indexOf(strings[i + 1], start) : input.length;
-            const strVal = input.slice(start, end);
-            const namedParser = keys[i];
-            model[namedParser.name] = namedParser.parse(strVal);
-            lastIndex = end;
-        }
-        return /** @type {any} */ model;
-    }
-    return mappableParser({
-        parse: parseInternal
-    });
-}
-const t = {
-    ...commonTypes,
-    named,
-    tpl,
-    tpl2
-};
+},{"../modules/graph.js":"1OoBE","../modules/index.js":"6dHdC","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["9LZNA","jbdHw"], "jbdHw", "parcelRequire94c2")
 
-},{"./index.js":"6dHdC","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["lQ2LT","gdfmp"], "gdfmp", "parcelRequire94c2")
-
-//# sourceMappingURL=index.783677bc.js.map
+//# sourceMappingURL=index.26d084e1.js.map
