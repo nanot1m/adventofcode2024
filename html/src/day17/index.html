@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="../common.css" />
+		<title>AoC 2024. Day 17</title>
+
+		<style>
+			form {
+				flex: 1;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Advent of code 2024. Day 17</h1>
+			<aside>
+				<ul>
+					<li>
+						<a href="../index.html">Main</a>
+					</li>
+				</ul>
+			</aside>
+		</div>
+
+		<section class="container">
+			<h2>Solution</h2>
+
+			<div class="row justify-content-center">
+				<div class="relative">
+					<canvas id="canvas"></canvas>
+				</div>
+
+				<div class="col">
+					<form id="input-form">
+						<textarea
+							name="input"
+							id="input"
+							cols="20"
+							rows="10"
+							placeholder="Paste your input here"
+						></textarea>
+						<div>
+							<button>Submit</button>
+							<button type="button" disabled id="simulate">Simulate</button>
+						</div>
+					</form>
+
+					<textarea
+						name="output"
+						id="output-input"
+						readonly
+						placeholder="Output will be shown here"
+						rows="10"
+					></textarea>
+				</div>
+			</div>
+		</section>
+
+		<script src="./index.js" type="module"></script>
+	</body>
+</html>
