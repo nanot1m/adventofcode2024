@@ -101,51 +101,34 @@ export function* dijkstra(getNext, starts, valToHash) {
 	const queue = new PriorityQueue((a, b) => a.distance - b.distance)
 
 	for (const { value, distance } of starts) {
-		/** @type {PathItem<T>} */
-		const item = { distance, value, parent: null, predecessors: [] }
-		queue.push(item)
-		if (valToHash) {
-			visited.set(valToHash(value), item)
-		}
+		queue.push({ distance, value, parent: null, predecessors: [] })
 	}
 
 	while (queue.length) {
 		const current = queue.pop()
+
+		if (valToHash) {
+			const hash = valToHash(current.value)
+			if (visited.has(hash)) {
+				const item = visited.get(hash)
+				if (current.distance === item.distance) {
+					item.predecessors.push(current.parent)
+				}
+				continue
+			} else {
+				visited.set(hash, current)
+			}
+		}
+
 		yield current
 
-		for (const { value, distance: d } of getNext(current.value, current)) {
-			const distance = current.distance + d
-			if (valToHash) {
-				const hash = valToHash(value)
-				if (visited.has(hash)) {
-					const item = visited.get(hash)
-					if (distance < item.distance) {
-						item.distance = distance
-						item.parent = current
-						queue.push(item)
-						item.predecessors = [current]
-					} else if (distance === item.distance) {
-						item.predecessors.push(current)
-					}
-				} else {
-					/** @type {PathItem<T>} */
-					const item = {
-						distance: distance,
-						value: value,
-						parent: current,
-						predecessors: [current],
-					}
-					visited.set(hash, item)
-					queue.push(item)
-				}
-			} else {
-				queue.push({
-					distance: distance,
-					value: value,
-					parent: current,
-					predecessors: [current],
-				})
-			}
+		for (const { value, distance } of getNext(current.value, current)) {
+			queue.push({
+				distance: current.distance + distance,
+				value: value,
+				parent: current,
+				predecessors: [current],
+			})
 		}
 	}
 }
