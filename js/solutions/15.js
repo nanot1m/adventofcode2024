@@ -1,6 +1,6 @@
 // @ts-check
 
-import { bfs, dijkstra } from "../modules/graph.js"
+import { dijkstra } from "../modules/graph.js"
 import { Array2d, V } from "../modules/index.js"
 import { tuple } from "../modules/lib.js"
 import { t } from "../modules/parser.js"

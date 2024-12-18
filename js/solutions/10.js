@@ -34,7 +34,7 @@ function next(input) {
 export function part1(input) {
 	return A.traverse(input)
 		.filter((x) => x.value === 0)
-		.flatMap((s) => dfs(next(input), s.pos, V.toString))
+		.flatMap((s) => dfs(next(input), [s.pos], V.toString))
 		.count((x) => A.get(input, x.value) === 9)
 }
 
@@ -44,6 +44,6 @@ export function part1(input) {
 export function part2(input) {
 	return A.traverse(input)
 		.filter((x) => x.value === 0)
-		.flatMap((s) => dfs(next(input), s.pos))
+		.flatMap((s) => dfs(next(input), [s.pos]))
 		.count((x) => A.get(input, x.value) === 9)
 }

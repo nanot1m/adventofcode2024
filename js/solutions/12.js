@@ -37,7 +37,7 @@ function toSegments(input) {
 	return A.traverse(input)
 		.filter((p) => !visited.has(p.pos))
 		.map((p) =>
-			dfs(next(input), p.pos, identity)
+			dfs(next(input), [p.pos], identity)
 				.map((x) => (visited.add(x.value), x.value))
 				.toSet(),
 		)
