@@ -106,6 +106,32 @@ export function readIntArr(input, separator = ",") {
 export const mod = (n, m) => ((n % m) + m) % m
 
 /**
+ * @param {number} min
+ * @param {number} max
+ * @param {(idx: number) => number} comparator
+ */
+export function binSearch(min, max, comparator) {
+	let left = min
+	let right = max
+
+	while (left < right) {
+		const mid = Math.floor((left + right) / 2)
+		const cmp = comparator(mid)
+
+		if (cmp === 0) {
+			return mid
+		}
+		if (cmp < 0) {
+			left = mid + 1
+		} else {
+			right = mid
+		}
+	}
+
+	return left
+}
+
+/**
  *
  * @param {T} value
  * @template T
