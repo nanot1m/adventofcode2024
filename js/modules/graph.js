@@ -25,13 +25,15 @@ export function* dfs(getNext, starts, valToHash) {
 	/** @type {Map<unknown, PathItem<T>>} */
 	const visited = new Map()
 
-	/** @type {PathItem<T>[]} */
-	const stack = starts.map((start) => ({
-		distance: 0,
-		value: start,
-		parent: null,
-		predecessors: [],
-	}))
+	const stack = starts.map(
+		(start) =>
+			/** @type {PathItem<T>} */ ({
+				distance: 0,
+				value: start,
+				parent: null,
+				predecessors: [],
+			}),
+	)
 
 	while (stack.length) {
 		const current = stack.pop()
@@ -75,13 +77,15 @@ export function* bfs(getNext, starts, valToHash) {
 	/** @type {Map<unknown, PathItem<T>>} */
 	const visited = new Map()
 
-	/** @type {PathItem<T>[]} */
-	const queue = starts.map((start) => ({
-		distance: 0,
-		value: start,
-		parent: null,
-		predecessors: [],
-	}))
+	const queue = starts.map(
+		(start) =>
+			/** @type {PathItem<T>} */ ({
+				distance: 0,
+				value: start,
+				parent: null,
+				predecessors: [],
+			}),
+	)
 
 	while (queue.length) {
 		const current = queue.shift()
@@ -158,5 +162,17 @@ export function* dijkstra(getNext, starts, valToHash) {
 				predecessors: [current],
 			})
 		}
+	}
+}
+
+/**
+ * @param {PathItem<T>} step
+ *
+ * @template T
+ */
+export function* iteratePathBackwards(step) {
+	while (step) {
+		yield step
+		step = step.parent
 	}
 }
