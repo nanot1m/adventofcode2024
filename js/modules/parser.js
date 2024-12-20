@@ -170,6 +170,14 @@ const commonTypes = {
 		}),
 
 	/**
+	 * @param {Parser<T>} type
+	 * @param {string | RegExp} [separator]
+	 *
+	 * @template {string | number} T
+	 */
+	set: (type, separator) => commonTypes.arr(type, separator).map((arr) => new Set(arr)),
+
+	/**
 	 * @template {Parser<unknown>[]} T
 	 *
 	 * @param {import("ts-toolbelt").F.Narrow<T>} types

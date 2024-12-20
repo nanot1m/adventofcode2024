@@ -18,7 +18,7 @@ bbrgwb`
 
 /** @typedef {ReturnType<typeof parseInput>} InputType */
 
-export const parseInput = t.tuple([t.arr(t.str()).map((x) => new Set(x)), t.arr(t.str())]).parse
+export const parseInput = t.tuple([t.set(t.str()), t.arr(t.str())]).parse
 
 /**
  * @param {string} pattern
@@ -26,7 +26,7 @@ export const parseInput = t.tuple([t.arr(t.str()).map((x) => new Set(x)), t.arr(
  * @param {number} patternMaxLen
  *
  */
-function count(pattern, towelSet, patternMaxLen) {
+function calc(pattern, towelSet, patternMaxLen) {
 	const dp = Array(pattern.length + 1).fill(0)
 
 	dp[0] = 1
@@ -41,27 +41,23 @@ function count(pattern, towelSet, patternMaxLen) {
 /**
  * @param {InputType} input
  */
-export function part1(input) {
-	const [patterns, designs] = input
-
+export function part1([patterns, designs]) {
 	const patternMaxLen = patterns
 		.values()
-		.map((towel) => towel.length)
+		.map((pattern) => pattern.length)
 		.max()
 
-	return designs.values().count((x) => count(x, patterns, patternMaxLen))
+	return designs.values().count((pattern) => calc(pattern, patterns, patternMaxLen))
 }
 
 /**
  * @param {InputType} input
  */
-export function part2(input) {
-	const [patterns, designs] = input
-
+export function part2([patterns, designs]) {
 	const patternMaxLen = patterns
 		.values()
-		.map((towel) => towel.length)
+		.map((pattern) => pattern.length)
 		.max()
 
-	return designs.values().sum((x) => count(x, patterns, patternMaxLen))
+	return designs.values().sum((pattern) => calc(pattern, patterns, patternMaxLen))
 }
