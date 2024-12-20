@@ -49,10 +49,7 @@ export function part1(input) {
 		.map((towel) => towel.length)
 		.max()
 
-	return designs
-		.values()
-		.filter((x) => count(x, patterns, patternMaxLen))
-		.count()
+	return designs.values().count((x) => count(x, patterns, patternMaxLen))
 }
 
 /**
@@ -66,8 +63,5 @@ export function part2(input) {
 		.map((towel) => towel.length)
 		.max()
 
-	return designs
-		.values()
-		.map((x) => count(x, patterns, patternMaxLen))
-		.sum()
+	return designs.values().sum((x) => count(x, patterns, patternMaxLen))
 }

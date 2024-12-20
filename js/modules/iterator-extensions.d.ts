@@ -19,6 +19,7 @@ declare global {
 		takeUntil(predicate: (x: T) => boolean): IteratorObject<T>
 		distinct<J>(mapFn?: (x: T) => J): IteratorObject<T>
 		maxBy(mapFn: (x: T) => string | number): T
+		minBy(mapFn: (x: T) => string | number): T
 		toMap<K, V>(keySelector: (x: T) => K, valueSelector: (x: T, map: Map<K, V>) => V): Map<K, V>
 		combinations(size: number): IteratorObject<T[]>
 		countFrequencies(): Map<T, number>
@@ -29,7 +30,9 @@ declare global {
 
 		// number methods
 		sum(): T extends number ? number : never
-		multiply(): T extends number ? number : never
+		sum(mapFn: (x: T) => number): number
+		product(): T extends number ? number : never
+		product(mapFn: (x: T) => number): T extends number ? number : never
 		min(): T extends number ? number : never
 		max(): T extends number ? number : never
 		lcm(): T extends number ? number : never

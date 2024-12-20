@@ -69,7 +69,7 @@ export function part1(input) {
 		})
 		.values()
 		.map((x) => x.length)
-		.multiply()
+		.product()
 }
 
 /**

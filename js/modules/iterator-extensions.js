@@ -80,19 +80,19 @@ export function sum(xs) {
 	return xs.reduce(add, 0)
 }
 
-Iterator.prototype.sum = function () {
-	return sum(this)
+Iterator.prototype.sum = function (fn) {
+	return sum(fn ? this.map(fn) : this)
 }
 
 /**
  * @param {IteratorObject<number>} xs
  */
-export function multiply(xs) {
+export function product(xs) {
 	return xs.reduce(mul, 1)
 }
 
-Iterator.prototype.multiply = function () {
-	return multiply(this)
+Iterator.prototype.product = function (fn) {
+	return product(fn ? this.map(fn) : this)
 }
 
 /**
@@ -302,6 +302,24 @@ Iterator.prototype.maxBy = function maxBy(fn) {
 		}
 	}
 	return max
+}
+
+/**
+ * @template T
+ * @param {(arg: T) => number | string} fn
+ * @returns {T}
+ */
+Iterator.prototype.minBy = function minBy(fn) {
+	let min
+	let minVal
+	for (const x of this) {
+		const val = fn(x)
+		if (min === undefined || val < minVal) {
+			min = x
+			minVal = val
+		}
+	}
+	return min
 }
 
 /**
