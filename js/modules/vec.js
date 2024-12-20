@@ -232,7 +232,7 @@ export const len = (vec) => Math.sqrt(vec[0] ** 2 + vec[1] ** 2)
  * @param {Vec2} vecB
  * @returns {number}
  */
-export const cLen = (vecA, vecB = zero()) =>
+export const cLen = (vecA, vecB) =>
 	Math.max(Math.abs(vecA[0] - vecB[0]), Math.abs(vecA[1] - vecB[1]))
 
 /**
@@ -240,8 +240,7 @@ export const cLen = (vecA, vecB = zero()) =>
  * @param {Vec2} vecB
  * @returns {number}
  */
-export const mLen = (vecA, vecB = zero()) =>
-	Math.abs(vecA[0] - vecB[0]) + Math.abs(vecA[1] - vecB[1])
+export const mLen = (vecA, vecB) => Math.abs(vecA[0] - vecB[0]) + Math.abs(vecA[1] - vecB[1])
 
 /**
  *
