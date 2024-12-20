@@ -25,14 +25,18 @@ const calculateHash = (filePath) => {
 	return createHash("sha256").update(content).digest("hex")
 }
 
+let terminateSpawn = () => {}
+
 // Function to run the solve command
 const runSolve = () => {
+	terminateSpawn()
 	console.clear()
 	console.log(`Executing solve command for solution ${solutionId}...`)
 	const command = `node scripts/solve.js ${solutionId}`
 	const [cmd, ...args] = command.split(" ")
 
-	spawn(cmd, args, { stdio: "inherit", shell: true })
+	const child = spawn(cmd, args, { stdio: "inherit", shell: true })
+	terminateSpawn = () => child.kill()
 }
 
 // Execute immediately and initialize lastHash

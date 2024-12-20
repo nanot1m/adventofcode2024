@@ -341,6 +341,26 @@ Iterator.prototype.countFrequencies = function () {
  * @returns {IteratorObject<T[]>}
  */
 export function* combinations(xs, count, current = [], start = 0) {
+	if (count === 2) {
+		for (let i = start; i < xs.length; i++) {
+			for (let j = i + 1; j < xs.length; j++) {
+				yield [xs[i], xs[j]]
+			}
+		}
+		return
+	}
+
+	if (count === 3) {
+		for (let i = start; i < xs.length; i++) {
+			for (let j = i + 1; j < xs.length; j++) {
+				for (let k = j + 1; k < xs.length; k++) {
+					yield [xs[i], xs[j], xs[k]]
+				}
+			}
+		}
+		return
+	}
+
 	if (count === 0) {
 		yield [...current]
 		return

@@ -2,21 +2,56 @@
 import { performance } from "perf_hooks"
 import { parse } from "path"
 import { HttpError, submitAndLog } from "./input.js"
+import { colorText } from "../modules/lib.js"
 
 const currentDay = parse(process.argv[1]).name
 
-const WIDTH = 66
+const WIDTH = 40
 
 const drawLine = (/** @type {0 | 1 | 2} */ type) => {
 	let [l, r] = type === 1 ? ["╭", "╮"] : type === 2 ? ["╰", "╯"] : ["├", "┤"]
 	console.log(
-		`${l}${Array(WIDTH - 2)
-			.fill("─")
-			.join("")}${r}`,
+		colorText(
+			`${l}${Array(WIDTH - 2)
+				.fill("─")
+				.join("")}${r}`,
+			"fgGreen",
+			"dim",
+		),
 	)
 }
 
-const drawText = (/** @type {string} */ text) => console.log(`│ ${text.padEnd(WIDTH - 4, " ")} │`)
+const tree = `\
+     
+  ${colorText("*", "fgGreen", "bright")}  
+ ${colorText("***", "fgGreen", "bright")} 
+${colorText("*****", "fgGreen", "bright")}
+  ${colorText("|", "fgRed", "bright")}  
+  ${colorText("✦", "fgYellow", "bright")}  
+  ${colorText("*", "fgGreen", "bright")}  
+ ${colorText("***", "fgGreen", "bright")} 
+${colorText("*****", "fgGreen", "bright")}
+  ${colorText("|", "fgRed", "bright")}  `
+
+const drawText = (/** @type {string} */ text, align = "left", treeIdx = -1) => {
+	const textWidthExcludeColor = text.replace(/\x1b\[\d+m/g, "").length
+	const padStart = align === "center" ? Math.floor((WIDTH - 4 - textWidthExcludeColor) / 2) : 2
+	let padEnd = WIDTH - 4 - textWidthExcludeColor - padStart
+
+	if (treeIdx >= 0) {
+		const treeLine = tree.split("\n")[treeIdx] ?? ""
+		const treeWidth = treeLine.replace(/\x1b\[\d+m/g, "").length
+		padEnd -= treeWidth
+		text = `${text}${" ".repeat(padEnd)}${treeLine}`
+		padEnd = 0
+	}
+
+	console.log(
+		`${colorText("│", "fgGreen", "dim")} ${" ".repeat(padStart)}${text}${" ".repeat(
+			padEnd,
+		)} ${colorText("│", "fgGreen", "dim")}`,
+	)
+}
 
 /**
  * @param {Object} config
@@ -36,7 +71,7 @@ export async function solution({
 	await Promise.resolve()
 		.then(() => {
 			drawLine(1)
-			drawText("Advent of Code. Day " + day)
+			drawText(colorText(`🎄 Advent of Code 2024. Day ${day} 🎄`, "fgGreen", "bright"), "center")
 			drawLine()
 			return input(Number(day))
 		})
@@ -44,6 +79,7 @@ export async function solution({
 		.then(async (solutions) => {
 			/** @type {Array<any>} */
 			const results = []
+			let treeIdx = 0
 			await solutions.reduce((acc, solution, idx) => {
 				let now = 0
 				return acc
@@ -53,16 +89,25 @@ export async function solution({
 					.then(solution)
 					.then((result) => {
 						results.push(result)
-						drawText(`Part ${idx + 1}`)
-						drawText("")
+						drawText(
+							colorText(`Part ${idx + 1} ${"⭐️".repeat(idx + 1)}`, "fgYellow", "bright"),
+							"left",
+							treeIdx++,
+						)
+						drawText("", "left", treeIdx++)
+						drawText("", "left", treeIdx++)
 						const lines = (result ?? "").toString().split("\n")
 						if (lines.length > 1) {
-							drawText("Result:")
-							lines.forEach((/** @type {string} */ line) => drawText(line))
+							drawText("Result:", "left", treeIdx++)
+							lines.forEach((/** @type {string} */ line) => drawText(line, "left", treeIdx++))
 						} else {
-							drawText(`Result: ${result}`)
+							drawText(`${colorText("Result:")} ${colorText(result, "bright")}`, "left", treeIdx++)
 						}
-						drawText(`  Time: ${(performance.now() - now).toFixed(0)}ms`)
+						drawText(
+							colorText(`  Time: ${(performance.now() - now).toFixed(0)}ms`, "dim"),
+							"left",
+							treeIdx++,
+						)
 						drawLine(idx === solutions.length - 1 ? 2 : 0)
 					})
 			}, Promise.resolve())
