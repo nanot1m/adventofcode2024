@@ -6,6 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"solve": "npx n exec 22 node scripts/solve.js",
+		"solve:watch": "npx n exec 22 node scripts/solveAndWatch.js",
 		"tpl": "node scripts/prepare.js"
 	},
 	"keywords": [],
