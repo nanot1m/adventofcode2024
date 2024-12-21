@@ -6,7 +6,7 @@ import { colorText } from "../modules/lib.js"
 
 const currentDay = parse(process.argv[1]).name
 
-const WIDTH = 40
+const WIDTH = 41
 
 const drawLine = (/** @type {0 | 1 | 2} */ type) => {
 	let [l, r] = type === 1 ? ["╭", "╮"] : type === 2 ? ["╰", "╯"] : ["├", "┤"]
@@ -46,10 +46,15 @@ const drawText = (/** @type {string} */ text, align = "left", treeIdx = -1) => {
 		padEnd = 0
 	}
 
+	const b = colorText("│", "fgGreen", "dim")
+	const formattedTextLine = `${b} ${" ".repeat(padStart)}${text}${" ".repeat(padEnd)} ${b}`
+
+	const snowflakes = [" ❅·", "· ❆", "·  ", " · ", "  .", ".  ", "   ", "   ", " ˙ ", "  ˙"]
+
 	console.log(
-		`${colorText("│", "fgGreen", "dim")} ${" ".repeat(padStart)}${text}${" ".repeat(
-			padEnd,
-		)} ${colorText("│", "fgGreen", "dim")}`,
+		formattedTextLine.replaceAll("   ", () =>
+			colorText(snowflakes[Math.floor(Math.random() * snowflakes.length)], "dim"),
+		),
 	)
 }
 
@@ -101,10 +106,14 @@ export async function solution({
 							drawText("Result:", "left", treeIdx++)
 							lines.forEach((/** @type {string} */ line) => drawText(line, "left", treeIdx++))
 						} else {
-							drawText(`${colorText("Result:")} ${colorText(result, "bright")}`, "left", treeIdx++)
+							drawText(
+								`${colorText("Result:")} ${colorText(result, "bright")} ${colorText(".", "dim")}`,
+								"left",
+								treeIdx++,
+							)
 						}
 						drawText(
-							colorText(`  Time: ${(performance.now() - now).toFixed(0)}ms`, "dim"),
+							colorText(`  Time: ${(performance.now() - now).toFixed(0)}ms`, "fgGreen", "dim"),
 							"left",
 							treeIdx++,
 						)
