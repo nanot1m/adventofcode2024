@@ -30,8 +30,6 @@ let terminateSpawn = () => {}
 // Function to run the solve command
 const runSolve = () => {
 	terminateSpawn()
-	console.clear()
-	console.log(`Executing solve command for solution ${solutionId}...`)
 	const command = `node scripts/solve.js ${solutionId}`
 	const [cmd, ...args] = command.split(" ")
 

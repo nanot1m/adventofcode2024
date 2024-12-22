@@ -8,6 +8,10 @@ import { cachedFetchFromAoC } from "../infra/input.js"
 
 const day = parseInt(process.argv[2], 10)
 
+if (!day) {
+	throw new Error("Please provide a day number as an argument")
+}
+
 /**
  * @param {unknown} err
  */
@@ -23,22 +27,9 @@ function handleError(err) {
 	console.error(err)
 }
 
-if (day) {
-	execDay(day).then(() => {
-		process.exit(0)
-	}, handleError)
-} else {
-	readdir(config.solutionsDir)
-		.then((dir) => dir.filter((x) => /^\d+\.js$/.test(x)))
-		.then((xs) => xs.map((x) => x.split(".")[0]))
-		.then((xs) => xs.sort((a, b) => Number(a) - Number(b)))
-		.then((files) =>
-			files.reduce(
-				(acc, file) => acc.then(() => execDay(file).catch(handleError)),
-				Promise.resolve(),
-			),
-		)
-}
+execDay(day).then(() => {
+	process.exit(0)
+}, handleError)
 
 /**
  * @param {string | number} day
