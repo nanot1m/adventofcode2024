@@ -32,32 +32,25 @@ export function part1(input) {
 	return input.values().sum((num) => iterate(num, nextSecretNumber).skip(1).take(2000).last())
 }
 
-const secretToBananas = (/** @type {number} */ secret) =>
-	iterate(secret, nextSecretNumber)
-		.map((x) => x % 10)
-		.take(2000)
-		.toArray()
-
-const bananasToMap = (/** @type {number[]} */ vals) =>
-	vals
-		.values()
-		.windowed(2)
-		.map(([a, b]) => b - a)
-		.windowed(4)
-		.map((w, i) => tuple(w.join(), vals[i + 4]))
-		.toMap(
-			([changes]) => changes,
-			([changes, val], map) => map.get(changes) ?? val,
-		)
-
 /**
  * @param {InputType} input
  */
 export function part2(input) {
-	const changeSeqMaps = input.map(secretToBananas).map(bananasToMap)
-
-	return changeSeqMaps[0]
-		.keys()
-		.map((key) => changeSeqMaps.values().sum((m) => m.get(key) ?? 0))
+	return input
+		.values()
+		.flatMap((num) =>
+			iterate(num, nextSecretNumber)
+				.map((x) => x % 10)
+				.take(2000)
+				.windowed(5)
+				.map(([a, b, c, d, e]) => [b - a, c - b, d - c, e - d, e])
+				.map(([a, b, c, d, e]) => [a + b * 100 + c * 10 ** 4 + d * 10 ** 6, e])
+				.distinct(([key]) => key),
+		)
+		.toMap(
+			([key]) => key,
+			([key, value], map) => (map.get(key) ?? 0) + value,
+		)
+		.values()
 		.max()
 }
