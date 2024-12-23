@@ -6,7 +6,7 @@ import { colorText, getOrUpdate } from "../modules/lib.js"
 
 const currentDay = parse(process.argv[1]).name
 
-const WIDTH = 41
+const WIDTH = 64
 
 const drawLine = (/** @type {0 | 1 | 2} */ type) => {
 	let [l, r] = type === 1 ? ["╭", "╮"] : type === 2 ? ["╰", "╯"] : ["├", "┤"]
@@ -43,7 +43,7 @@ const drawText = (/** @type {string} */ text, align = "left", treeIdx = -1) => {
 		const treeLine = tree().split("\n")[treeIdx] ?? ""
 		const treeWidth = treeLine.replace(/\x1b\[\d+m/g, "").length
 		padEnd -= treeWidth
-		text = `${text}${" ".repeat(padEnd)}${treeLine}`
+		text = `${text}${" ".repeat(Math.max(0, padEnd))}${treeLine}`
 		padEnd = 0
 	}
 
