@@ -344,7 +344,7 @@ export function* combinations(xs, count, current = [], start = 0) {
 	if (count === 2) {
 		for (let i = start; i < xs.length; i++) {
 			for (let j = i + 1; j < xs.length; j++) {
-				yield [xs[i], xs[j]]
+				yield [...current, xs[i], xs[j]]
 			}
 		}
 		return
@@ -354,7 +354,7 @@ export function* combinations(xs, count, current = [], start = 0) {
 		for (let i = start; i < xs.length; i++) {
 			for (let j = i + 1; j < xs.length; j++) {
 				for (let k = j + 1; k < xs.length; k++) {
-					yield [xs[i], xs[j], xs[k]]
+					yield [...current, xs[i], xs[j], xs[k]]
 				}
 			}
 		}

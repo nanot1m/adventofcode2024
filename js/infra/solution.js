@@ -130,10 +130,10 @@ export async function solution({ input, solve, day = currentDay }) {
 				}, Promise.resolve())
 			}
 
-			while (true) {
-				await draw()
-				await new Promise((resolve) => setTimeout(resolve, 1000))
-			}
+			// while (true) {
+			await draw()
+			// await new Promise((resolve) => setTimeout(resolve, 1000))
+			// }
 		})
 		.catch((e) => {
 			if (e instanceof HttpError && e.statusCode === 404) {
