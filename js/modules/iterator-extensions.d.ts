@@ -11,6 +11,7 @@ declare global {
 		zip<U>(other: Iterable<U>): IteratorObject<[T, U]>
 		indexed(): IteratorObject<[number, T]>
 		windowed(size: number): IteratorObject<T[]>
+		partition(predicate: (x: T) => boolean): [trues: T[], falses: T[]]
 		findIndex(predicate: (x: T) => boolean): number
 		indexOf(value: T): number
 		skipLast(count?: number): IteratorObject<T>

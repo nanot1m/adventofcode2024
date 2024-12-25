@@ -372,6 +372,24 @@ export function* combinations(xs, count, current = [], start = 0) {
 	}
 }
 
+/**
+ * @param {(x: T) => boolean} predicate
+ *
+ * @template T
+ */
+Iterator.prototype.partition = function (predicate) {
+	const trues = []
+	const falses = []
+	for (const x of this) {
+		if (predicate(x)) {
+			trues.push(x)
+		} else {
+			falses.push(x)
+		}
+	}
+	return [trues, falses]
+}
+
 Iterator.prototype.combinations = function (/** @type {number} */ count) {
 	return combinations(this.toArray(), count)
 }
